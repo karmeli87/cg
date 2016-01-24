@@ -17,12 +17,27 @@ GLuint textureId;
 std::vector<unsigned char> textureData;
 
 ShaderProgram* Grape::m_cProg = NULL;
+Vector3 index2vector(std::vector<float> &vertices,unsigned int index){
+	return Vector3(vertices[3 * index], vertices[3 * index + 1], vertices[3 * index + 2]);
+}
+
+Vector3 calcNormal(std::vector<float> &vertices, unsigned int vertex1, unsigned int vertex2, unsigned int vertex3){
+	Vector3 v1 = index2vector(vertices, vertex1);
+	Vector3 v2 = index2vector(vertices, vertex2);
+	Vector3 v3 = index2vector(vertices, vertex3);
+
+	Vector3 edge1 = v2 - v1;
+	Vector3 edge2 = v3 - v1;
+	return edge2.cross(edge1).normalize();
+}
 
 void Grape::DrawEllipsoid()
 {
-	std::vector<float> uv_coord;
 	std::vector<unsigned int> indices;
+	std::vector<float> uv_coord;
 	std::vector<float> vertices;
+	std::vector<float> normals;
+
 	float tStep = (Pi) / (float)stacks;
 	float sStep = (Pi) / (float)slices;
 	
@@ -41,21 +56,25 @@ void Grape::DrawEllipsoid()
 			uv_coord.push_back((s + Pi) / (2 * Pi)); // y-coord
 			i = i + 2;
 			
-			if (true){
-				indices.push_back(i);
-				indices.push_back(i - 1);
-				indices.push_back(i - 2);
-
-				indices.push_back(i);
-				indices.push_back(i + 1);
-				indices.push_back(i - 1);
-			}
+			// left-up tri
+			indices.push_back(i);
+			indices.push_back(i - 1);
+			indices.push_back(i - 2);
+			//right-bottom tri
+			indices.push_back(i);
+			indices.push_back(i + 1);
+			indices.push_back(i - 1);
 		}
+	}
+	for (int i = 2; i < indices.size() / 3; i += 2){
+		Grape::pushVector<float>(normals, calcNormal(vertices, i, i - 1, i - 2));
+		Grape::pushVector<float>(normals, calcNormal(vertices, i, i + 1, i - 1));
 	}
 
 	bindVertices(vertices);
 	bindIndices(indices);
 	bindUV(uv_coord);
+	bindNormals(normals);
 }
 
 void Grape::setInitialTexture(){
@@ -81,22 +100,25 @@ Grape::Grape(Vector3 pos, Vector3 dir,Vector3 radiusVector){
 	shaderOrigin = glGetUniformLocation(Grape::m_cProg->getPrgID(), "origin");
 	shaderVertex = glGetAttribLocation(Grape::m_cProg->getPrgID(), "in_Position");
 	shaderVertexUV = glGetAttribLocation(Grape::m_cProg->getPrgID(), "vertTexCoord");
+	shaderVertexNormal = glGetAttribLocation(Grape::m_cProg->getPrgID(), "vertexNormal");
 	
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glGenBuffers(1, &indexBuffer);
 	glGenBuffers(1, &vertexBuffer);
 	glGenBuffers(1, &uvBuffer);
-
+	glGenBuffers(1, &normalBuffer);
+	
 	DrawEllipsoid();
+	setMaterial();
 
 }
 Grape::Grape(Vector3 pos) : Grape(pos, Vector3() ,Vector3(1.0, 1.0, 1.0)){}
 void Grape::setMaterial(){
 
-	GLint matAmbientLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "material.ambient");
-	GLint matDiffuseLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "material.diffuse");
-	GLint matSpecularLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "material.specular");
+	GLint matAmbientLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "light.ambient");
+	GLint matDiffuseLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "light.diffuse");
+	GLint matSpecularLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "light.specular");
 	GLint matShineLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "material.shininess");
 
 	glUniform3f(matAmbientLoc, 1.0f, 0.5f, 0.31f);
@@ -105,8 +127,6 @@ void Grape::setMaterial(){
 	glUniform1f(matShineLoc, 32.0f);
 }
 void Grape::render(){
-	glPolygonMode(GL_FRONT_AND_BACK, (isSelected ? GL_LINE : GL_FILL));
-
 	// bind texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureId);
@@ -116,60 +136,14 @@ void Grape::render(){
 
 	glEnableVertexAttribArray(shaderVertex);				// set vertex coord
 	glEnableVertexAttribArray(shaderVertexUV);				// set texture coord
+	glEnableVertexAttribArray(shaderVertexNormal);			// set vertex normal
 	glDrawElements(GL_TRIANGLES, objectsNum, GL_UNSIGNED_INT, 0);
+	glDisableVertexAttribArray(shaderVertexNormal);
 	glDisableVertexAttribArray(shaderVertexUV);
 	glDisableVertexAttribArray(shaderVertex);
 	
 	glBindVertexArray(0);
-	
-	/*
-	float As[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, As);
-	float Al[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_AMBIENT, Al);
-
-	float Dl[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, Dl);
-
-	float Sl[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_SPECULAR, Sl);
-	
-	float Am[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Am);
-
-	float Dm[4] = { 0.9f, 0.5f, 0.5f, 1.0f };
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Dm);
-
-	float Sm[4] = { 0.6f, 0.6f, 0.6f, 1.0f };
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Sm);
-
-	float f = 60.0f;
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, f);
-	
-	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_LIGHTING);
-	//glEnable(GL_LIGHT0);
-	glEnable(GL_NORMALIZE);
-	glEnable(GL_COLOR_MATERIAL);
-	glShadeModel(GL_SMOOTH);
-	
-	initTexture();
-	
-	glPushMatrix();
-	glLoadIdentity();
-	glScalef(rVector.x, rVector.y, rVector.z);
-	glTranslatef(origin.x, origin.y, origin.z);
-
-	//gluQuadricDrawStyle(mySpehre, GLU_FILL);
-	gluQuadricTexture(mySpehre, GL_TRUE);
-	gluQuadricNormals(mySpehre, GLU_SMOOTH);
-
-	glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, textureId); //Tell OpenGL which texture to edit	
-		gluSphere(mySpehre, 1, slices, stacks);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-	*/
+	glActiveTexture(GL_TEXTURE_2D);
 }
 void Grape::move(Vector3 new_pos){
 	origin += new_pos;

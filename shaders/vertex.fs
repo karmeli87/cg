@@ -7,13 +7,13 @@ uniform vec3 origin;
 in vec4 in_Position;
 in vec3 vertexNormal;
 in vec2 vertTexCoord;
-out vec2 fragTexCoord;
-out vec3 Normal;
+out vec2 TexCoords;
 out vec3 FragPos;
+out vec3 Normal;
 
 void main()
 {
-  fragTexCoord = vertTexCoord;
+  TexCoords = vertTexCoord;
   mat4 move = mat4(1.0f);
   move[3].xyz=origin;
   gl_Position = cProjectionMatrix * move *cModelviewMatrix *in_Position;

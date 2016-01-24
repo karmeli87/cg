@@ -7,7 +7,6 @@ ShaderProgram* Cylinder::m_cProg = NULL;
 
 void Cylinder::DrawCylinder()
 {
-	
 	std::vector<float> cylVertices;
 
 	float thetaStep = ((float)2.0*M_PI) / slices;
@@ -40,8 +39,7 @@ Cylinder::Cylinder(Vector3 pos, GLfloat r, GLfloat size, Vector3 angle, GLint re
 	length = size;
 	dir = angle;
 	slices = res;
-	fruitEdge = new Grape(origin, dir, Vector3(1, 1, 2));
-
+	
 	shaderOrigin = glGetUniformLocation(Cylinder::m_cProg->getPrgID(), "origin");
 	shaderVertex = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "in_Position");
 	shaderVertexUV = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "vertTexCoord");
@@ -57,6 +55,8 @@ Cylinder::Cylinder(Vector3 pos, GLfloat r, GLfloat size, Vector3 angle, GLint re
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	
 	DrawCylinder();
+	fruitEdge = new Grape(origin, dir, Vector3(1, 1, 2));
+
 }
 
 void Cylinder::setMaterial(){
@@ -73,12 +73,11 @@ void Cylinder::setMaterial(){
 }
 
 void Cylinder::render() {
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glEnableVertexAttribArray(shaderVertex);
 	glUniform3f(shaderOrigin, origin.x, origin.y, origin.z);
+	glEnableVertexAttribArray(shaderVertex);
+	std::cout << "num of obj : " << objectsNum << std::endl;
 	//glDrawElements(GL_TRIANGLE_STRIP, cylVertices.size(), GL_UNSIGNED_INT, 0);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, objectsNum);
 	glDisableVertexAttribArray(shaderVertex);

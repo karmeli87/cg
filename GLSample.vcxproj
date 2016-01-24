@@ -179,7 +179,7 @@
   <ItemGroup>
     <ClCompile Include="src\Common.cpp" />
     <ClCompile Include="src\Cylinder.cpp" />
-    <ClCompile Include="src\GLSample.cpp" />
+    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Grape.cpp" />
     <ClCompile Include="src\lodepng.cpp" />
     <ClCompile Include="src\Matrices.cpp" />

@@ -65,6 +65,12 @@ RenderTriangle::initGL()
   m_iProjectionMatrixID = glGetUniformLocation(m_cProg.getPrgID(), "cProjectionMatrix");
   m_iModelviewMatrixID = glGetUniformLocation(m_cProg.getPrgID(), "cModelviewMatrix");
 
+  glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.diffuse"), 0);
+  glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.specular"), 1);
+  GLint lightPosLoc = glGetUniformLocation(m_cProg.getPrgID(), "light.position");
+  GLint viewPosLoc = glGetUniformLocation(m_cProg.getPrgID(), "viewPos");
+  glUniform3f(lightPosLoc, 0, 0, -10);
+  glUniform3f(viewPosLoc, 0, 0, -10);
   //----------------------------------------------------------------------
   // create object
   //----------------------------------------------------------------------
@@ -171,7 +177,7 @@ RenderTriangle::render()
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
   for (int i = 0; i < 5; i++){
-	  glStencilFunc(GL_ALWAYS, i + 1, -1);
+	 // glStencilFunc(GL_ALWAYS, i + 1, -1);
 	//  grapeArr[i]->render();
   }
   cylArr[0]->render();
