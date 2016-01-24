@@ -10,7 +10,7 @@ unsigned int stacks = 20;
 unsigned int slices = 20;
 unsigned int textureHeight = 512;
 unsigned int textureWidht = 512;
-const char *texturePath = "./texture/greenSM.png";
+const char *texturePath = "./textures/greenSM.png";
 bool isTextureLoaded = false;
 GLuint textureId;
 
