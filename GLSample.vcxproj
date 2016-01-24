@@ -175,6 +175,9 @@
     <ClInclude Include="include\RenderIf.h" />
     <ClInclude Include="include\RenderTriangle.h" />
     <ClInclude Include="include\ShaderProgram.h" />
+    <ClInclude Include="include\Stem1.h" />
+    <ClInclude Include="include\Stem2.h" />
+    <ClInclude Include="include\Stem3.h" />
     <ClInclude Include="include\Vectors.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
@@ -187,6 +190,9 @@
     <ClCompile Include="src\Matrices.cpp" />
     <ClCompile Include="src\RenderTriangle.cpp" />
     <ClCompile Include="src\ShaderProgram.cpp" />
+    <ClCompile Include="src\Stem1.cpp" />
+    <ClCompile Include="src\Stem2.cpp" />
+    <ClCompile Include="src\Stem3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\fragment.fs" />

@@ -85,8 +85,8 @@ void Cylinder::DrawCylinder()
 		indices.push_back(i + 1);
 		indices.push_back(i - 1);
 	}
+	
 	bindVertices(cylVertices);
-
 	bindIndices(indices);
 	bindUV(uv_coord);
 }
@@ -125,8 +125,6 @@ Cylinder::Cylinder(Vector3 pos, GLfloat r, GLfloat size, Vector3 angle, GLint re
 	glGenBuffers(1, &uvBuffer);
 	
 	DrawCylinder();
-	fruitEdge = new Grape(origin, dir, Vector3(1, 1, 2));
-
 }
 
 void Cylinder::setMaterial(){
@@ -160,5 +158,5 @@ void Cylinder::render() {
 	glBindVertexArray(0);
 	glActiveTexture(GL_TEXTURE_2D);
 
-	fruitEdge->render();
+
 }

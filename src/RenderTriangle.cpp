@@ -5,6 +5,9 @@
 #include "ShaderProgram.h"
 #include "Grape.h"
 #include "Cylinder.h"
+#include "Stem1.h"
+#include "Stem2.h"
+#include "Stem3.h"
 #include "Matrices.h"
 #include "Helpers.h"
 
@@ -16,20 +19,7 @@ const GLchar* vertexShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/v
 const GLchar* fragShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/fragment.fs");
 
 
-Cylinder** cylArr;
-void initCylArr() {
-	cylArr = new Cylinder*[3];
-	GLint slices = 20;
-	GLfloat x = 0;
-	GLfloat y = 0;
-	GLfloat z = 0;
-	GLfloat radius = 0.3;
-	GLfloat length = 8;
-	Vector3 angle = Vector3(15, 30, 67);
-	cylArr[0] = new Cylinder(Vector3(x, y, z), radius, length, angle, slices);
-	cylArr[1] = new Cylinder(Vector3(x +5, y, z), radius, length, Vector3(0,90,0), slices);
-	cylArr[2] = new Cylinder(Vector3(x, y, z), radius, length, angle, slices);
-}
+
 // constructor
 RenderTriangle::RenderTriangle()
   : m_iWidth( 800 )
@@ -41,7 +31,6 @@ RenderTriangle::RenderTriangle()
   , m_fRotY( 0.0f )
   , m_fTransZ(-10.0f)
 {}
-
 
 
 void
@@ -78,10 +67,11 @@ RenderTriangle::initGL()
   //----------------------------------------------------------------------
   Grape::setInitialTexture();
   Cylinder::setInitialTexture();
+  
   Grape::setShader(m_cProg);
   Cylinder::setShader(m_cProg);
+
   
-  initCylArr();
   //-----------------------------------------------------------------
   // init GL
   //-----------------------------------------------------------------
@@ -103,6 +93,8 @@ RenderTriangle::initGL()
   glEnable( GL_MULTISAMPLE_ARB );
 
 
+
+  mainStem = new Stem1(Vector3(0, 0, 0), 0.5f, 20, Vector3(45, 90, 45), 20);
 }
 
 
@@ -179,12 +171,14 @@ RenderTriangle::render()
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-  for (int i = 0; i < 5; i++){
-	 // glStencilFunc(GL_ALWAYS, i + 1, -1);
-	//  grapeArr[i]->render();
-  }
+  /*for (int i = 0; i < 5; i++){
+	  glStencilFunc(GL_ALWAYS, i + 1, -1);
+	  grapeArr[i]->render();
+  }*/
   //cylArr[0]->render();
-  for (int i = 0; i < 3; i++) {
+/*  for (int i = 0; i < 3; i++) {
 	  cylArr[i]->render();
-  }
+  }*/
+
+	mainStem->render();
 }

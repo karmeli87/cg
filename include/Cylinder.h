@@ -16,7 +16,7 @@
 class Cylinder : public GameObject{
 public:
 	Cylinder() {}
-	Cylinder(Vector3 origin, GLfloat radius, GLfloat length, Vector3 dir, GLint slices);
+	Cylinder(Vector3 pos, GLfloat r, GLfloat size, Vector3 angle, GLint res);
 	~Cylinder() {}
 	static void setInitialTexture();
 	static void setShader(ShaderProgram &prog){ m_cProg = &prog; }
@@ -24,15 +24,14 @@ public:
 
 protected:
 	virtual void setMaterial();
-
-private:
 	GLfloat length;
 	GLfloat radius;
 	GLint slices;
-	Grape* fruitEdge;
-
-	static ShaderProgram *m_cProg;
 	void DrawCylinder();
+
+private:
+	static ShaderProgram *m_cProg;
+
 };
 
 #endif

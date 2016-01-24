@@ -1,4 +1,4 @@
-#version 150
+#version 330
 
 uniform mat4  cProjectionMatrix;
 uniform mat4  cModelviewMatrix;
@@ -16,7 +16,7 @@ void main()
   TexCoords = vertTexCoord;
   mat4 move = mat4(1.0f);
   move[3].xyz=origin;
-  gl_Position = cProjectionMatrix * move *cModelviewMatrix *in_Position;
+  gl_Position = cProjectionMatrix*cModelviewMatrix * move  *in_Position;
   FragPos = in_Position.xyz;
   Normal = vertexNormal;
 }
