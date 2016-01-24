@@ -18,6 +18,7 @@ public:
 	Cylinder() {}
 	Cylinder(Vector3 origin, GLfloat radius, GLfloat length, Vector3 dir, GLint slices);
 	~Cylinder() {}
+	static void setInitialTexture();
 	static void setShader(ShaderProgram &prog){ m_cProg = &prog; }
 	virtual void render();
 

@@ -27,6 +27,8 @@ void initCylArr() {
 	GLfloat length = 8;
 	Vector3 angle = Vector3(15, 30, 67);
 	cylArr[0] = new Cylinder(Vector3(x, y, z), radius, length, angle, slices);
+	cylArr[1] = new Cylinder(Vector3(x +5, y, z), radius, length, Vector3(0,90,0), slices);
+	cylArr[2] = new Cylinder(Vector3(x, y, z), radius, length, angle, slices);
 }
 // constructor
 RenderTriangle::RenderTriangle()
@@ -75,6 +77,7 @@ RenderTriangle::initGL()
   // create object
   //----------------------------------------------------------------------
   Grape::setInitialTexture();
+  Cylinder::setInitialTexture();
   Grape::setShader(m_cProg);
   Cylinder::setShader(m_cProg);
   
@@ -180,8 +183,8 @@ RenderTriangle::render()
 	 // glStencilFunc(GL_ALWAYS, i + 1, -1);
 	//  grapeArr[i]->render();
   }
-  cylArr[0]->render();
+  //cylArr[0]->render();
   for (int i = 0; i < 3; i++) {
-	  //cylArr[i]->render();
+	  cylArr[i]->render();
   }
 }
