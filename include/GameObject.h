@@ -31,14 +31,8 @@ public:
 	}
 	virtual ~GameObject(){}
 	virtual void render() = 0;
-	virtual void select(){ 
-		isSelected = true;
-		glPolygonMode(GL_FRONT_AND_BACK,  GL_LINE);
-	}
-	virtual void deselect(){ 
-		isSelected = false; 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
+	virtual void select(){ isSelected = true; }
+	virtual void deselect(){ isSelected = false; }
 
 protected:
 	virtual void addVertices(std::vector<float>&vertices, Vector3 v){

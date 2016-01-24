@@ -105,6 +105,8 @@ void Grape::setMaterial(){
 	glUniform1f(matShineLoc, 32.0f);
 }
 void Grape::render(){
+	glPolygonMode(GL_FRONT_AND_BACK, (isSelected ? GL_LINE : GL_FILL));
+
 	// bind texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureId);
@@ -119,7 +121,55 @@ void Grape::render(){
 	glDisableVertexAttribArray(shaderVertex);
 	
 	glBindVertexArray(0);
-	glActiveTexture(GL_TEXTURE_2D);
+	
+	/*
+	float As[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, As);
+	float Al[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	glLightfv(GL_LIGHT0, GL_AMBIENT, Al);
+
+	float Dl[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, Dl);
+
+	float Sl[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glLightfv(GL_LIGHT0, GL_SPECULAR, Sl);
+	
+	float Am[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Am);
+
+	float Dm[4] = { 0.9f, 0.5f, 0.5f, 1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Dm);
+
+	float Sm[4] = { 0.6f, 0.6f, 0.6f, 1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Sm);
+
+	float f = 60.0f;
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, f);
+	
+	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHT0);
+	glEnable(GL_NORMALIZE);
+	glEnable(GL_COLOR_MATERIAL);
+	glShadeModel(GL_SMOOTH);
+	
+	initTexture();
+	
+	glPushMatrix();
+	glLoadIdentity();
+	glScalef(rVector.x, rVector.y, rVector.z);
+	glTranslatef(origin.x, origin.y, origin.z);
+
+	//gluQuadricDrawStyle(mySpehre, GLU_FILL);
+	gluQuadricTexture(mySpehre, GL_TRUE);
+	gluQuadricNormals(mySpehre, GLU_SMOOTH);
+
+	glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, textureId); //Tell OpenGL which texture to edit	
+		gluSphere(mySpehre, 1, slices, stacks);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+	*/
 }
 void Grape::move(Vector3 new_pos){
 	origin += new_pos;
