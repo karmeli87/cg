@@ -48,6 +48,11 @@ protected:
 		list.push_back(vec.y);
 		list.push_back(vec.z);
 	}
+	template <class T> static void updateVector(std::vector<T>&list,unsigned int index, Vector3 vec){
+		list[3 * index] = vec.x;
+		list[3 * index + 1] = vec.y;
+		list[3 * index + 2] = vec.z;
+	}
 	virtual void addVertices(std::vector<float>&vertices, Vector3 v){
 		Vector4 vec = Vector4(v.x, v.y, v.z, 1);
 		vec = rotationMatrix(dir.x, dir.y, dir.z)*vec;

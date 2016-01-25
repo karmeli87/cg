@@ -28,7 +28,7 @@ Vector3 calcNormal(std::vector<float> &vertices, unsigned int vertex1, unsigned 
 
 	Vector3 edge1 = v2 - v1;
 	Vector3 edge2 = v3 - v1;
-	return edge2.cross(edge1).normalize();
+	return edge2.cross(edge1);
 }
 
 void Grape::DrawEllipsoid()
@@ -40,37 +40,51 @@ void Grape::DrawEllipsoid()
 
 	float tStep = (Pi) / (float)stacks;
 	float sStep = (Pi) / (float)slices;
-	
+	Vector3 inv_rVector = Vector3(1 / rVector.x, 1 / rVector.y, 1 / rVector.z);
 	unsigned int i = -1;
 	
 	for (float t = -Pi / 2; t <= (Pi / 2) + .0001; t += tStep)
 	{
 		for (float s = -Pi; s <= Pi + .0001; s += sStep)
-		{
-			addVertices(vertices,Vector3(cos(t) * cos(s), cos(t) * sin(s), sin(t))*rVector);
+		{	
+			Vector3 coord = Vector3(cos(t) * cos(s), cos(t) * sin(s), sin(t));
+			addVertices(vertices,coord*rVector);
 			uv_coord.push_back((2 * t + Pi) / (2 * Pi)); // x-coord
 			uv_coord.push_back((s + Pi) / (2 * Pi)); // y-coord
+			Grape::pushVector<float>(normals, coord*inv_rVector*inv_rVector*2);
 
-			addVertices(vertices,Vector3(cos(t + tStep) * cos(s), cos(t + tStep) * sin(s), sin(t + tStep))*rVector);
+			coord = Vector3(cos(t + tStep) * cos(s), cos(t + tStep) * sin(s), sin(t + tStep));
+			addVertices(vertices,coord*rVector);
 			uv_coord.push_back((2 * t + 2 *tStep + Pi) / (2 * Pi)); // x-coord
 			uv_coord.push_back((s + Pi) / (2 * Pi)); // y-coord
+			Grape::pushVector<float>(normals, coord*inv_rVector*inv_rVector*2);
+
 			i = i + 2;
-			
-			// left-up tri
-			indices.push_back(i);
-			indices.push_back(i - 1);
-			indices.push_back(i - 2);
-			//right-bottom tri
-			indices.push_back(i);
-			indices.push_back(i + 1);
-			indices.push_back(i - 1);
+
+			if (s > -Pi){
+				if (t < (-Pi / 2) + 0.001){
+					indices.push_back(i - 3);
+					indices.push_back(i);
+					indices.push_back(i - 2);
+				}
+				else if (t > (Pi / 2)){
+					indices.push_back(i);
+					indices.push_back(i- 3);
+					indices.push_back(i - 1);
+				}
+				else {
+					// left-up tri
+					indices.push_back(i - 3);
+					indices.push_back(i - 1);
+					indices.push_back(i - 2);
+					//right-bottom tri
+					indices.push_back(i - 2);
+					indices.push_back(i - 1);
+					indices.push_back(i);
+				}
+			}
 		}
 	}
-	for (int i = 2; i < indices.size() / 3; i += 2){
-		Grape::pushVector<float>(normals, calcNormal(vertices, i, i - 1, i - 2));
-		Grape::pushVector<float>(normals, calcNormal(vertices, i, i + 1, i - 1));
-	}
-
 	bindVertices(vertices);
 	bindIndices(indices);
 	bindUV(uv_coord);
@@ -121,9 +135,9 @@ void Grape::setMaterial(){
 	GLint matSpecularLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "light.specular");
 	GLint matShineLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "material.shininess");
 
-	glUniform3f(matAmbientLoc, 1.0f, 0.5f, 0.31f);
-	glUniform3f(matDiffuseLoc, 1.0f, 0.5f, 0.31f);
-	glUniform3f(matSpecularLoc, 0.5f, 0.5f, 0.5f);
+	glUniform3f(matAmbientLoc, 0.2f, 0.2f, 0.2f);
+	glUniform3f(matDiffuseLoc, 0.5f, 0.5f, 0.5f);
+	glUniform3f(matSpecularLoc, 1.0f, 1.0f, 1.0f);
 	glUniform1f(matShineLoc, 32.0f);
 }
 void Grape::render(){

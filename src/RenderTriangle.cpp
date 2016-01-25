@@ -7,7 +7,7 @@
 #include "Cylinder.h"
 #include "Matrices.h"
 #include "Helpers.h"
-
+Grape* grape;
 
 // vertex shader program
 const GLchar* vertexShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/vertex.fs");
@@ -69,9 +69,10 @@ RenderTriangle::initGL()
 
   glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.diffuse"), 0);
   glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.specular"), 1);
+
   GLint lightPosLoc = glGetUniformLocation(m_cProg.getPrgID(), "light.position");
   GLint viewPosLoc = glGetUniformLocation(m_cProg.getPrgID(), "viewPos");
-  glUniform3f(lightPosLoc, 0, 0, -10);
+  glUniform3f(lightPosLoc, 10, 10, -10);
   glUniform3f(viewPosLoc, 0, 0, -10);
   //----------------------------------------------------------------------
   // create object
@@ -101,7 +102,7 @@ RenderTriangle::initGL()
 
   // enable anti-aliasing
   glEnable( GL_MULTISAMPLE_ARB );
-
+  grape = new Grape(Vector3(), Vector3(), Vector3(1, 1, 2));
 
 }
 
@@ -172,6 +173,8 @@ void
 RenderTriangle::moveObject2D(unsigned int index, int x, int y){
 	//grapeArr[index - 1]->move(Vector3(-(float)(x) / (2*m_iWidth)*m_fTransZ,(float)(y) / (2*m_iHeight)*m_fTransZ, 0));
 }
+
+
 void
 RenderTriangle::render()
 {
@@ -179,12 +182,13 @@ RenderTriangle::render()
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
+	grape->render();
   for (int i = 0; i < 5; i++){
 	 // glStencilFunc(GL_ALWAYS, i + 1, -1);
 	//  grapeArr[i]->render();
   }
   //cylArr[0]->render();
   for (int i = 0; i < 3; i++) {
-	  cylArr[i]->render();
+	 // cylArr[i]->render();
   }
 }
