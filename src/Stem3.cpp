@@ -12,6 +12,6 @@ Stem3::Stem3(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLint res)
 
 void Stem3::render(){
 
-	Cylinder::render();
+	this->Cylinder::render();
 	fruitEdge->render();
 }

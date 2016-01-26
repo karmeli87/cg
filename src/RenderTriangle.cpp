@@ -159,14 +159,5 @@ RenderTriangle::render()
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-  /*for (int i = 0; i < 5; i++){
-	  glStencilFunc(GL_ALWAYS, i + 1, -1);
-	  grapeArr[i]->render();
-  }*/
-  //cylArr[0]->render();
-/*  for (int i = 0; i < 3; i++) {
-	  cylArr[i]->render();
-  }*/
-
 	mainStem->render();
 }
