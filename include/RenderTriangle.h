@@ -10,7 +10,10 @@
 
 #include "RenderIf.h"
 #include "ShaderProgram.h"
-
+#include "Cylinder.h"
+#include "Stem1.h"
+#include "Stem2.h"
+#include "Stem3.h"
 
 
 class RenderTriangle : public RenderIf
@@ -87,7 +90,6 @@ protected:
   static float afVertexList[3 * 3];
   // initial index list
   static unsigned int auiIndexList[1 * 3];
-
 };
 
 

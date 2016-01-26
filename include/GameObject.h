@@ -1,6 +1,10 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 #include "Helpers.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 class GameObject
 {
@@ -53,10 +57,25 @@ protected:
 		list[3 * index + 1] = vec.y;
 		list[3 * index + 2] = vec.z;
 	}
+	
+	bool is = true;
 	virtual void addVertices(std::vector<float>&vertices, Vector3 v){
-		Vector4 vec = Vector4(v.x, v.y, v.z, 1);
-		vec = rotationMatrix(dir.x, dir.y, dir.z)*vec;
-		Vector3 newVec = Vector3(vec.x, vec.y, vec.z);
+		glm::mat4 trans;
+	//	if (is){
+			Vector3 cross = Vector3(0.0, 1.0, 0.0).cross(this->dir);
+			glm::vec3 axis = glm::vec3(cross.x, cross.y, cross.z);
+			float angle = std::acos(dir.normalize().dot(Vector3(0.0, 1.0, 0.0)));// *180 / 3.14159265;
+			trans = glm::rotate(trans, angle, axis);
+	//		std::cout << " asdasd " << glm::to_string(trans) << std::endl;
+	//		is = false;
+	//	}
+		
+		glm::vec4 vec = glm::vec4(v.x, v.y, v.z, 1);
+		glm::vec4 res = trans*vec;
+		Vector3 newVec = Vector3(res.x, res.y, res.z);
+		
+	//	std::cout << "in :" << v << " , " << "out : " << newVec << std::endl;
+		
 		pushVector<float>(vertices, newVec);
 	}
 	virtual void bindVertices(std::vector<float>&vertices){

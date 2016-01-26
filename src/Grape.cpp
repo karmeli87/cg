@@ -109,8 +109,7 @@ void Grape::setInitialTexture(){
 Grape::Grape(Vector3 pos, Vector3 dir,Vector3 radiusVector){
 	origin = pos;
 	rVector = radiusVector;
-	this->dir = dir+Vector3(90,0,0);
-
+	
 	shaderOrigin = glGetUniformLocation(Grape::m_cProg->getPrgID(), "origin");
 	shaderVertex = glGetAttribLocation(Grape::m_cProg->getPrgID(), "in_Position");
 	shaderVertexUV = glGetAttribLocation(Grape::m_cProg->getPrgID(), "vertTexCoord");

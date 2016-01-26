@@ -3,11 +3,11 @@
 #include <iostream>
 #include <cmath>
 #include "ShaderProgram.h"
-#include "Grape.h"
 #include "Cylinder.h"
+#include "Stem1.h"
 #include "Matrices.h"
 #include "Helpers.h"
-Grape* grape;
+
 
 // vertex shader program
 const GLchar* vertexShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/vertex.fs");
@@ -15,21 +15,8 @@ const GLchar* vertexShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/v
 // fragment shader program
 const GLchar* fragShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/fragment.fs");
 
+Stem1* mainStem;
 
-Cylinder** cylArr;
-void initCylArr() {
-	cylArr = new Cylinder*[3];
-	GLint slices = 20;
-	GLfloat x = 0;
-	GLfloat y = 0;
-	GLfloat z = 0;
-	GLfloat radius = 0.3;
-	GLfloat length = 8;
-	Vector3 angle = Vector3(15, 30, 67);
-	cylArr[0] = new Cylinder(Vector3(x, y, z), radius, length, angle, slices);
-	cylArr[1] = new Cylinder(Vector3(x +5, y, z), radius, length, Vector3(0,90,0), slices);
-	cylArr[2] = new Cylinder(Vector3(x, y, z), radius, length, angle, slices);
-}
 // constructor
 RenderTriangle::RenderTriangle()
   : m_iWidth( 800 )
@@ -41,7 +28,6 @@ RenderTriangle::RenderTriangle()
   , m_fRotY( 0.0f )
   , m_fTransZ(-10.0f)
 {}
-
 
 
 void
@@ -69,20 +55,20 @@ RenderTriangle::initGL()
 
   glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.diffuse"), 0);
   glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.specular"), 1);
-
   GLint lightPosLoc = glGetUniformLocation(m_cProg.getPrgID(), "light.position");
   GLint viewPosLoc = glGetUniformLocation(m_cProg.getPrgID(), "viewPos");
-  glUniform3f(lightPosLoc, 10, 10, -10);
+  glUniform3f(lightPosLoc, 0, 0, -10);
   glUniform3f(viewPosLoc, 0, 0, -10);
   //----------------------------------------------------------------------
   // create object
   //----------------------------------------------------------------------
   Grape::setInitialTexture();
   Cylinder::setInitialTexture();
+  
   Grape::setShader(m_cProg);
   Cylinder::setShader(m_cProg);
+
   
-  initCylArr();
   //-----------------------------------------------------------------
   // init GL
   //-----------------------------------------------------------------
@@ -102,8 +88,10 @@ RenderTriangle::initGL()
 
   // enable anti-aliasing
   glEnable( GL_MULTISAMPLE_ARB );
-  grape = new Grape(Vector3(), Vector3(), Vector3(1, 1, 2));
 
+
+
+  mainStem = new Stem1(Vector3(0, 0, 0), 0.5f, 20, Vector3(45, 45, 45), 20);
 }
 
 
@@ -148,14 +136,7 @@ RenderTriangle::renderCamera()
   
   Matrix4 m_afModelViewMatrix = rotationMatrix(m_fRotX, m_fRotY, 0);
   m_afModelViewMatrix[14] = m_fTransZ;
-
-  Matrix4 sceneOffset = Matrix4();
- // sceneOffset = 0.5*sceneOffset;
-  sceneOffset[12] = 0;
-  sceneOffset[13] = 0;
-  sceneOffset[14] = 0;
-  Matrix4 sendToShader = sceneOffset*Matrix4(m_afModelViewMatrix);
-  glUniformMatrix4fv(m_iModelviewMatrixID, 1, false, &sendToShader[0]);
+  glUniformMatrix4fv(m_iModelviewMatrixID, 1, false, &m_afModelViewMatrix[0]);
 
 }
 
@@ -173,8 +154,6 @@ void
 RenderTriangle::moveObject2D(unsigned int index, int x, int y){
 	//grapeArr[index - 1]->move(Vector3(-(float)(x) / (2*m_iWidth)*m_fTransZ,(float)(y) / (2*m_iHeight)*m_fTransZ, 0));
 }
-
-
 void
 RenderTriangle::render()
 {
@@ -182,13 +161,14 @@ RenderTriangle::render()
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-	grape->render();
-  for (int i = 0; i < 5; i++){
-	 // glStencilFunc(GL_ALWAYS, i + 1, -1);
-	//  grapeArr[i]->render();
-  }
+  /*for (int i = 0; i < 5; i++){
+	  glStencilFunc(GL_ALWAYS, i + 1, -1);
+	  grapeArr[i]->render();
+  }*/
   //cylArr[0]->render();
-  for (int i = 0; i < 3; i++) {
-	 // cylArr[i]->render();
-  }
+/*  for (int i = 0; i < 3; i++) {
+	  cylArr[i]->render();
+  }*/
+
+	mainStem->render();
 }

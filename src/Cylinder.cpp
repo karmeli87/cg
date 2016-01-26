@@ -23,11 +23,12 @@ void Cylinder::DrawCylinder()
 	float dz = ((float)(length)) / slices;
 
 	
+
 	unsigned int i = -1;
 	// close the opening at begin
 	for (float theta = 0; theta <= 2 * M_PI + 0.0001; theta += thetaStep) {
-		addVertices(cylVertices,Vector3(radius*cos(theta), 0, radius*sin(theta)));
-		addVertices(cylVertices,Vector3(0, 0, 0));
+		this->addVertices(cylVertices,Vector3(radius*cos(theta), 0, radius*sin(theta)));
+		this->addVertices(cylVertices,Vector3(0, 0, 0));
 		uv_coord.push_back(0); // y-coord
 		uv_coord.push_back(0); // x-coord
 		uv_coord.push_back(0); // y-coord
@@ -48,11 +49,11 @@ void Cylinder::DrawCylinder()
 	// create the cylinder
 	for (float z = 0; z < length; z += dz) {
 		for (float theta = 0; theta <= 2 * M_PI + 0.0001; theta += thetaStep) {
-			addVertices(cylVertices,Vector3(radius*cos(theta), z, radius*sin(theta)));
+			this->addVertices(cylVertices, Vector3(radius*cos(theta), z, radius*sin(theta)));
 			uv_coord.push_back(z / length); // x-coord
 			uv_coord.push_back(theta / ((float)2.0*M_PI)); // y-coord
 			
-			addVertices(cylVertices,Vector3(radius*cos(theta), z + dz, radius*sin(theta)));
+			this->addVertices(cylVertices, Vector3(radius*cos(theta), z + dz, radius*sin(theta)));
 			uv_coord.push_back((z + dz) / length); // x-coord
 			uv_coord.push_back((theta) / ((float)2.0*M_PI)); // y-coord
 
@@ -69,8 +70,8 @@ void Cylinder::DrawCylinder()
 	}
 	// close the opening at end
 	for (float theta = 0; theta <= 2 * M_PI + 0.0001; theta += thetaStep) {
-		addVertices(cylVertices,Vector3(radius*cos(theta), length, radius*sin(theta)));
-		addVertices(cylVertices,Vector3(0, length, 0));
+		this->addVertices(cylVertices, Vector3(radius*cos(theta), length, radius*sin(theta)));
+		this->addVertices(cylVertices, Vector3(0, length, 0));
 		uv_coord.push_back(0); // y-coord
 		uv_coord.push_back(0); // x-coord
 		uv_coord.push_back(0); // y-coord
@@ -85,10 +86,10 @@ void Cylinder::DrawCylinder()
 		indices.push_back(i + 1);
 		indices.push_back(i - 1);
 	}
-	bindVertices(cylVertices);
-
-	bindIndices(indices);
-	bindUV(uv_coord);
+	
+	this->bindVertices(cylVertices);
+	this->bindIndices(indices);
+	this->bindUV(uv_coord);
 }
 
 void Cylinder::setInitialTexture(){
@@ -112,10 +113,11 @@ Cylinder::Cylinder(Vector3 pos, GLfloat r, GLfloat size, Vector3 angle, GLint re
 	length = size;
 	dir = angle;
 	slices = res;
-	
-	shaderOrigin = glGetUniformLocation(Cylinder::m_cProg->getPrgID(), "origin");
-	shaderVertex = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "in_Position");
-	shaderVertexUV = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "vertTexCoord");
+	std::cout << "cylinder " << origin << dir << std::endl;
+
+	this->shaderOrigin = glGetUniformLocation(Cylinder::m_cProg->getPrgID(), "origin");
+	this->shaderVertex = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "in_Position");
+	this->shaderVertexUV = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "vertTexCoord");
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -124,9 +126,7 @@ Cylinder::Cylinder(Vector3 pos, GLfloat r, GLfloat size, Vector3 angle, GLint re
 	glGenBuffers(1, &vertexBuffer);
 	glGenBuffers(1, &uvBuffer);
 	
-	DrawCylinder();
-	fruitEdge = new Grape(origin, dir, Vector3(1, 1, 2));
-
+	this->DrawCylinder();
 }
 
 void Cylinder::setMaterial(){
@@ -144,6 +144,7 @@ void Cylinder::setMaterial(){
 
 void Cylinder::render() {
 
+	this->setMaterial();
 	// bind texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureId1);
@@ -160,5 +161,5 @@ void Cylinder::render() {
 	glBindVertexArray(0);
 	glActiveTexture(GL_TEXTURE_2D);
 
-	fruitEdge->render();
+
 }
