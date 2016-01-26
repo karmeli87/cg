@@ -6,7 +6,7 @@
 #include "ShaderProgram.h"
 #include "Cylinder.h"
 #include "Stem1.h"
-
+#include "Light.h"
 
 // vertex shader program
 const GLchar* vertexShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/vertex.fs");
@@ -14,6 +14,7 @@ const GLchar* vertexShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/v
 // fragment shader program
 const GLchar* fragShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/fragment.fs");
 
+Light* mainLight;
 Stem1* mainStem;
 
 // constructor
@@ -54,10 +55,9 @@ RenderTriangle::initGL()
 
   glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.diffuse"), 0);
   glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.specular"), 1);
-  GLint lightPosLoc = glGetUniformLocation(m_cProg.getPrgID(), "light.position");
+ 
   GLint viewPosLoc = glGetUniformLocation(m_cProg.getPrgID(), "viewPos");
-  glUniform3f(lightPosLoc, 0, 0, -10);
-  glUniform3f(viewPosLoc, 0, 0, -10);
+  glUniform3f(viewPosLoc, 0, 0, -20);
   //----------------------------------------------------------------------
   // create object
   //----------------------------------------------------------------------
@@ -66,8 +66,7 @@ RenderTriangle::initGL()
   
   Grape::setShader(m_cProg);
   Cylinder::setShader(m_cProg);
-
-  
+  Light::setShader(m_cProg);
   //-----------------------------------------------------------------
   // init GL
   //-----------------------------------------------------------------
@@ -88,8 +87,7 @@ RenderTriangle::initGL()
   // enable anti-aliasing
   glEnable( GL_MULTISAMPLE_ARB );
 
-
-
+  mainLight = new Light(glm::vec3(0, 0, -10));
   mainStem = new Stem1(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 20);
 }
 
@@ -132,7 +130,7 @@ RenderTriangle::renderCamera()
   
   // setup modelview matrix
 
-  glm::mat4 m_afModelViewMatrix = glm::eulerAngleXYZ<float>(glm::radians(m_fRotX), 0, glm::radians(m_fRotY));
+  glm::mat4 m_afModelViewMatrix = glm::eulerAngleXYZ<float>(glm::radians(m_fRotX), glm::radians(m_fRotY),0);
   m_afModelViewMatrix[3].z = m_fTransZ;
   glUniformMatrix4fv(m_iModelviewMatrixID, 1, false, glm::value_ptr(m_afModelViewMatrix));
 

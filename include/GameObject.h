@@ -66,8 +66,8 @@ protected:
 		glm::vec3 rotationAxis = glm::cross(axis, newDir);
 		float angle = std::acos(glm::dot(glm::normalize(axis), glm::normalize(newDir)));// *180 / 3.14159265;
 		trans = glm::rotate(trans, angle, rotationAxis);
-		std::cout << glm::to_string(axis) << glm::to_string(newDir) << angle << std::endl;
-		std::cout << "trans " << glm::to_string(trans) << std::endl;
+		//std::cout << glm::to_string(axis) << glm::to_string(newDir) << angle << std::endl;
+		//std::cout << "trans " << glm::to_string(trans) << std::endl;
 		axis = newDir;
 	}
 

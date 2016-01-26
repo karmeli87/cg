@@ -171,6 +171,7 @@
     <ClInclude Include="include\Cylinder.h" />
     <ClInclude Include="include\GameObject.h" />
     <ClInclude Include="include\Grape.h" />
+    <ClInclude Include="include\Light.h" />
     <ClInclude Include="include\lodepng.h" />
     <ClInclude Include="include\RenderIf.h" />
     <ClInclude Include="include\RenderTriangle.h" />
@@ -183,6 +184,7 @@
   <ItemGroup>
     <ClCompile Include="src\Common.cpp" />
     <ClCompile Include="src\Cylinder.cpp" />
+    <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Grape.cpp" />
     <ClCompile Include="src\lodepng.cpp" />

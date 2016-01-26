@@ -16,9 +16,6 @@ GLuint textureId;
 std::vector<unsigned char> textureData;
 
 ShaderProgram* Grape::m_cProg = NULL;
-glm::vec3 index2vector(std::vector<float> &vertices,unsigned int index){
-	return glm::vec3(vertices[3 * index], vertices[3 * index + 1], vertices[3 * index + 2]);
-}
 
 void Grape::DrawEllipsoid()
 {
@@ -114,24 +111,17 @@ Grape::Grape(glm::vec3 pos, glm::vec3 dir,glm::vec3 radiusVector){
 	glGenBuffers(1, &normalBuffer);
 	
 	DrawEllipsoid();
-	setMaterial();
-
 }
 Grape::Grape(glm::vec3 pos) : Grape(pos, glm::vec3() ,glm::vec3(1.0, 1.0, 1.0)){}
 void Grape::setMaterial(){
-
-	GLint matAmbientLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "light.ambient");
-	GLint matDiffuseLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "light.diffuse");
-	GLint matSpecularLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "light.specular");
 	GLint matShineLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "material.shininess");
-
-	glUniform3f(matAmbientLoc, 0.2f, 0.2f, 0.2f);
-	glUniform3f(matDiffuseLoc, 0.5f, 0.5f, 0.5f);
-	glUniform3f(matSpecularLoc, 1.0f, 1.0f, 1.0f);
 	glUniform1f(matShineLoc, 32.0f);
 }
 void Grape::render(){
 	// bind texture
+
+	setMaterial();
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	

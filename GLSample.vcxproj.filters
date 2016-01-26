@@ -54,6 +54,9 @@
     <ClInclude Include="include\Stem3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\lodepng.cpp">
@@ -84,6 +87,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Stem2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
