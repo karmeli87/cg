@@ -51,13 +51,13 @@ void Cylinder::DrawCylinder()
 	for (float z = 0; z < length; z += dz) {
 		for (float theta = 0; theta <= 2 * M_PI + 0.0001; theta += thetaStep) {
 			this->addVertices(cylVertices, glm::vec3(radius*cos(theta), z, radius*sin(theta)));
-			this->addVertices(normals, glm::vec3(radius*cos(theta), z, radius*sin(theta)));
+			this->addVertices(normals, glm::vec3(radius*cos(theta), 0, radius*sin(theta)));
 
 			uv_coord.push_back(z / length); // x-coord
 			uv_coord.push_back(theta / ((float)2.0*M_PI)); // y-coord
 			
 			this->addVertices(cylVertices, glm::vec3(radius*cos(theta), z + dz, radius*sin(theta)));
-			this->addVertices(normals, glm::vec3(radius*cos(theta), z + dz, radius*sin(theta)));
+			this->addVertices(normals, glm::vec3(radius*cos(theta), 0, radius*sin(theta)));
 
 			uv_coord.push_back((z + dz) / length); // x-coord
 			uv_coord.push_back((theta) / ((float)2.0*M_PI)); // y-coord
@@ -125,6 +125,7 @@ Cylinder::Cylinder(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLin
 	this->shaderOrigin = glGetUniformLocation(Cylinder::m_cProg->getPrgID(), "origin");
 	this->shaderVertex = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "in_Position");
 	this->shaderVertexUV = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "vertTexCoord");
+	this->shaderVertexNormal = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "vertexNormal");
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);

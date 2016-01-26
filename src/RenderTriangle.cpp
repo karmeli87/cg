@@ -16,6 +16,7 @@ const GLchar* fragShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/fra
 
 Light* mainLight;
 Stem1* mainStem;
+//Grape* myGrape;
 
 // constructor
 RenderTriangle::RenderTriangle()
@@ -86,9 +87,10 @@ RenderTriangle::initGL()
 
   // enable anti-aliasing
   glEnable( GL_MULTISAMPLE_ARB );
-
+ // myGrape = new Grape(glm::vec3(0, 0, 0), glm::vec3(45, 45, 45), glm::vec3(1, 1, 2));
   mainLight = new Light(glm::vec3(0, 0, -10));
   mainStem = new Stem1(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 20);
+  
 }
 
 
@@ -156,6 +158,7 @@ RenderTriangle::render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
+	//myGrape->render();
 	mainStem->render();
+
 }

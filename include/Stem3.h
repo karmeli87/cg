@@ -14,10 +14,11 @@
 
 class Stem3 : public Cylinder{
 public:
-	Stem3(glm::vec3 origin, GLfloat radius, GLfloat length, glm::vec3 dir, GLint slices);
+	Stem3(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLint res);
 	virtual void render();
 
 protected:
+	//Grape* fruitEdgeArray[1];
 	Grape* fruitEdge;
 };
 
