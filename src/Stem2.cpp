@@ -12,6 +12,5 @@ Stem2::Stem2(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLint res)
 }
 
 void Stem2::render(){
-	//printf("render stem2");
 	Cylinder::render();
 }
