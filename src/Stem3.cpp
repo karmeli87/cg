@@ -6,8 +6,8 @@
 #include "Grape.h"
 
 
-Stem3::Stem3(Vector3 pos, GLfloat r, GLfloat size, Vector3 angle, GLint res) :Cylinder(pos, r, size, angle, res){
-	fruitEdge = new Grape(origin, dir, Vector3(1, 1, 2));
+Stem3::Stem3(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLint res) :Cylinder(pos, r, size, angle, res){
+	fruitEdge = new Grape(origin, dir, glm::vec3(1, 1, 2));
 }
 
 void Stem3::render(){

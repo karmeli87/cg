@@ -3,7 +3,6 @@
 #include <math.h>
 #include "Grape.h"
 #include "Common.h"
-#include "Matrices.h"
 
 const double Pi = 3.1415926535897;
 unsigned int stacks = 20;
@@ -17,18 +16,8 @@ GLuint textureId;
 std::vector<unsigned char> textureData;
 
 ShaderProgram* Grape::m_cProg = NULL;
-Vector3 index2vector(std::vector<float> &vertices,unsigned int index){
-	return Vector3(vertices[3 * index], vertices[3 * index + 1], vertices[3 * index + 2]);
-}
-
-Vector3 calcNormal(std::vector<float> &vertices, unsigned int vertex1, unsigned int vertex2, unsigned int vertex3){
-	Vector3 v1 = index2vector(vertices, vertex1);
-	Vector3 v2 = index2vector(vertices, vertex2);
-	Vector3 v3 = index2vector(vertices, vertex3);
-
-	Vector3 edge1 = v2 - v1;
-	Vector3 edge2 = v3 - v1;
-	return edge2.cross(edge1);
+glm::vec3 index2vector(std::vector<float> &vertices,unsigned int index){
+	return glm::vec3(vertices[3 * index], vertices[3 * index + 1], vertices[3 * index + 2]);
 }
 
 void Grape::DrawEllipsoid()
@@ -40,24 +29,24 @@ void Grape::DrawEllipsoid()
 
 	float tStep = (Pi) / (float)stacks;
 	float sStep = (Pi) / (float)slices;
-	Vector3 inv_rVector = Vector3(1 / rVector.x, 1 / rVector.y, 1 / rVector.z);
+	glm::vec3 inv_rVector = glm::vec3(1 / rVector.x, 1 / rVector.y, 1 / rVector.z);
 	unsigned int i = -1;
 	
 	for (float t = -Pi / 2; t <= (Pi / 2) + .0001; t += tStep)
 	{
 		for (float s = -Pi; s <= Pi + .0001; s += sStep)
 		{	
-			Vector3 coord = Vector3(cos(t) * cos(s), cos(t) * sin(s), sin(t));
+			glm::vec3 coord = glm::vec3(cos(t) * cos(s), cos(t) * sin(s), sin(t));
 			addVertices(vertices,coord*rVector);
 			uv_coord.push_back((2 * t + Pi) / (2 * Pi)); // x-coord
 			uv_coord.push_back((s + Pi) / (2 * Pi)); // y-coord
-			Grape::pushVector<float>(normals, coord*inv_rVector*inv_rVector*2);
+			Grape::pushVector<float>(normals, 2.0f*coord*inv_rVector*inv_rVector);
 
-			coord = Vector3(cos(t + tStep) * cos(s), cos(t + tStep) * sin(s), sin(t + tStep));
+			coord = glm::vec3(cos(t + tStep) * cos(s), cos(t + tStep) * sin(s), sin(t + tStep));
 			addVertices(vertices,coord*rVector);
 			uv_coord.push_back((2 * t + 2 *tStep + Pi) / (2 * Pi)); // x-coord
 			uv_coord.push_back((s + Pi) / (2 * Pi)); // y-coord
-			Grape::pushVector<float>(normals, coord*inv_rVector*inv_rVector*2);
+			Grape::pushVector<float>(normals, 2.0f*coord*inv_rVector*inv_rVector);
 
 			i = i + 2;
 
@@ -106,10 +95,12 @@ void Grape::setInitialTexture(){
 	}
 }
 
-Grape::Grape(Vector3 pos, Vector3 dir,Vector3 radiusVector){
+Grape::Grape(glm::vec3 pos, glm::vec3 dir,glm::vec3 radiusVector){
+	
 	origin = pos;
 	rVector = radiusVector;
-	
+	setDir(dir);
+
 	shaderOrigin = glGetUniformLocation(Grape::m_cProg->getPrgID(), "origin");
 	shaderVertex = glGetAttribLocation(Grape::m_cProg->getPrgID(), "in_Position");
 	shaderVertexUV = glGetAttribLocation(Grape::m_cProg->getPrgID(), "vertTexCoord");
@@ -126,7 +117,7 @@ Grape::Grape(Vector3 pos, Vector3 dir,Vector3 radiusVector){
 	setMaterial();
 
 }
-Grape::Grape(Vector3 pos) : Grape(pos, Vector3() ,Vector3(1.0, 1.0, 1.0)){}
+Grape::Grape(glm::vec3 pos) : Grape(pos, glm::vec3() ,glm::vec3(1.0, 1.0, 1.0)){}
 void Grape::setMaterial(){
 
 	GLint matAmbientLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "light.ambient");
@@ -158,6 +149,6 @@ void Grape::render(){
 	glBindVertexArray(0);
 	glActiveTexture(GL_TEXTURE_2D);
 }
-void Grape::move(Vector3 new_pos){
+void Grape::move(glm::vec3 new_pos){
 	origin += new_pos;
 }

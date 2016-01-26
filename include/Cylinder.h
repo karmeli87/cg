@@ -8,7 +8,6 @@
 #include <GL/gl.h>
 
 #include "Common.h"
-#include "Matrices.h"
 #include "GameObject.h"
 #include "ShaderProgram.h"
 #include "Grape.h"
@@ -16,7 +15,7 @@
 class Cylinder : public GameObject{
 public:
 	Cylinder() {}
-	Cylinder(Vector3 pos, GLfloat r, GLfloat size, Vector3 angle, GLint res);
+	Cylinder(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLint res);
 	~Cylinder() {}
 	static void setInitialTexture();
 	static void setShader(ShaderProgram &prog){ m_cProg = &prog; }

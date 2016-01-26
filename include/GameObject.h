@@ -1,18 +1,19 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
-#include "Helpers.h"
+#include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 class GameObject
 {
 	/****** Vars *******/
 protected:
 	bool isSelected = false;
-	Vector3 origin;
-	Vector3 dir;
+	glm::vec3 origin;
+	glm::vec3 dir;
 
 	GLuint shaderOrigin;
 	GLuint shaderTexture;
@@ -31,7 +32,7 @@ protected:
 	/****** Functions ******/
 public:
 	GameObject(){}
-	GameObject(Vector3 origin, Vector3 dir){
+	GameObject(glm::vec3 origin, glm::vec3 dir){
 		this->origin = origin;
 		this->dir = dir;
 	}
@@ -47,35 +48,33 @@ public:
 	}
 
 protected:
-	template <class T> static void pushVector(std::vector<T>&list, Vector3 vec){
+
+	glm::mat4 trans;
+	glm::vec3 axis = glm::vec3(0,1,0);
+
+	template <class T> static void pushVector(std::vector<T>&list, glm::vec3 vec){
 		list.push_back(vec.x);
 		list.push_back(vec.y);
 		list.push_back(vec.z);
 	}
-	template <class T> static void updateVector(std::vector<T>&list,unsigned int index, Vector3 vec){
+	template <class T> static void updateVector(std::vector<T>&list,unsigned int index, glm::vec3 vec){
 		list[3 * index] = vec.x;
 		list[3 * index + 1] = vec.y;
 		list[3 * index + 2] = vec.z;
 	}
-	
-	bool is = true;
-	virtual void addVertices(std::vector<float>&vertices, Vector3 v){
-		glm::mat4 trans;
-	//	if (is){
-			Vector3 cross = Vector3(0.0, 1.0, 0.0).cross(this->dir);
-			glm::vec3 axis = glm::vec3(cross.x, cross.y, cross.z);
-			float angle = std::acos(dir.normalize().dot(Vector3(0.0, 1.0, 0.0)));// *180 / 3.14159265;
-			trans = glm::rotate(trans, angle, axis);
-	//		std::cout << " asdasd " << glm::to_string(trans) << std::endl;
-	//		is = false;
-	//	}
-		
-		glm::vec4 vec = glm::vec4(v.x, v.y, v.z, 1);
+	virtual void setDir(glm::vec3 newDir){
+		glm::vec3 rotationAxis = glm::cross(axis, newDir);
+		float angle = std::acos(glm::dot(glm::normalize(axis), glm::normalize(newDir)));// *180 / 3.14159265;
+		trans = glm::rotate(trans, angle, rotationAxis);
+		std::cout << glm::to_string(axis) << glm::to_string(newDir) << angle << std::endl;
+		std::cout << "trans " << glm::to_string(trans) << std::endl;
+		axis = newDir;
+	}
+
+	virtual void addVertices(std::vector<float>&vertices, glm::vec3 v){	
+		glm::vec4 vec = glm::vec4(v, 1);
 		glm::vec4 res = trans*vec;
-		Vector3 newVec = Vector3(res.x, res.y, res.z);
-		
-	//	std::cout << "in :" << v << " , " << "out : " << newVec << std::endl;
-		
+		glm::vec3 newVec = glm::vec3(res.x, res.y, res.z);
 		pushVector<float>(vertices, newVec);
 	}
 	virtual void bindVertices(std::vector<float>&vertices){

@@ -1,12 +1,11 @@
 #include "RenderTriangle.h"
-
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include <iostream>
 #include <cmath>
 #include "ShaderProgram.h"
 #include "Cylinder.h"
 #include "Stem1.h"
-#include "Matrices.h"
-#include "Helpers.h"
 
 
 // vertex shader program
@@ -91,7 +90,7 @@ RenderTriangle::initGL()
 
 
 
-  mainStem = new Stem1(Vector3(0, 0, 0), 0.5f, 20, Vector3(45, 45, 45), 20);
+  mainStem = new Stem1(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 20);
 }
 
 
@@ -132,11 +131,10 @@ RenderTriangle::renderCamera()
   glUniformMatrix4fv(m_iProjectionMatrixID, 1, false, m_afProjectionMatrix);
   
   // setup modelview matrix
-  
-  
-  Matrix4 m_afModelViewMatrix = rotationMatrix(m_fRotX, m_fRotY, 0);
-  m_afModelViewMatrix[14] = m_fTransZ;
-  glUniformMatrix4fv(m_iModelviewMatrixID, 1, false, &m_afModelViewMatrix[0]);
+
+  glm::mat4 m_afModelViewMatrix = glm::eulerAngleXYZ<float>(glm::radians(m_fRotX), 0, glm::radians(m_fRotY));
+  m_afModelViewMatrix[3].z = m_fTransZ;
+  glUniformMatrix4fv(m_iModelviewMatrixID, 1, false, glm::value_ptr(m_afModelViewMatrix));
 
 }
 
@@ -152,7 +150,7 @@ void RenderTriangle::selectObject(unsigned int index){
 }
 void
 RenderTriangle::moveObject2D(unsigned int index, int x, int y){
-	//grapeArr[index - 1]->move(Vector3(-(float)(x) / (2*m_iWidth)*m_fTransZ,(float)(y) / (2*m_iHeight)*m_fTransZ, 0));
+	//grapeArr[index - 1]->move(glm::vec3(-(float)(x) / (2*m_iWidth)*m_fTransZ,(float)(y) / (2*m_iHeight)*m_fTransZ, 0));
 }
 void
 RenderTriangle::render()

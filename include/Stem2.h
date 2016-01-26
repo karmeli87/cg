@@ -8,7 +8,6 @@
 #include <GL/gl.h>
 
 #include "Common.h"
-#include "Matrices.h"
 #include "GameObject.h"
 #include "ShaderProgram.h"
 #include "Cylinder.h"
@@ -17,7 +16,7 @@
 
 class Stem2 : public Cylinder{
 public:
-	Stem2(Vector3 origin, GLfloat radius, GLfloat length, Vector3 dir, GLint slices);
+	Stem2(glm::vec3 origin, GLfloat radius, GLfloat length, glm::vec3 dir, GLint slices);
 	virtual void render();
 
 protected:

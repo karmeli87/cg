@@ -13,7 +13,7 @@
 
 class Stem1 : public Cylinder{
 public:
-	Stem1(Vector3 pos, GLfloat r, GLfloat size, Vector3 angle, GLint res);
+	Stem1(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLint res);
 	virtual void render();
 
 protected:

@@ -171,16 +171,13 @@
     <ClInclude Include="include\Cylinder.h" />
     <ClInclude Include="include\GameObject.h" />
     <ClInclude Include="include\Grape.h" />
-    <ClInclude Include="include\Helpers.h" />
     <ClInclude Include="include\lodepng.h" />
-    <ClInclude Include="include\Matrices.h" />
     <ClInclude Include="include\RenderIf.h" />
     <ClInclude Include="include\RenderTriangle.h" />
     <ClInclude Include="include\ShaderProgram.h" />
     <ClInclude Include="include\Stem1.h" />
     <ClInclude Include="include\Stem2.h" />
     <ClInclude Include="include\Stem3.h" />
-    <ClInclude Include="include\Vectors.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -189,7 +186,6 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Grape.cpp" />
     <ClCompile Include="src\lodepng.cpp" />
-    <ClCompile Include="src\Matrices.cpp" />
     <ClCompile Include="src\RenderTriangle.cpp" />
     <ClCompile Include="src\ShaderProgram.cpp" />
     <ClCompile Include="src\Stem1.cpp" />

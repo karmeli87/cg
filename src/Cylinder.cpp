@@ -3,7 +3,6 @@
 #include <math.h>
 #include "Cylinder.h"
 
-
 unsigned int textureHeight1 = 512;
 unsigned int textureWidht1 = 512;
 const char *texturePath1 = "./textures/stemTexture4.png"; 
@@ -27,8 +26,8 @@ void Cylinder::DrawCylinder()
 	unsigned int i = -1;
 	// close the opening at begin
 	for (float theta = 0; theta <= 2 * M_PI + 0.0001; theta += thetaStep) {
-		this->addVertices(cylVertices,Vector3(radius*cos(theta), 0, radius*sin(theta)));
-		this->addVertices(cylVertices,Vector3(0, 0, 0));
+		this->addVertices(cylVertices,glm::vec3(radius*cos(theta), 0, radius*sin(theta)));
+		this->addVertices(cylVertices,glm::vec3(0, 0, 0));
 		uv_coord.push_back(0); // y-coord
 		uv_coord.push_back(0); // x-coord
 		uv_coord.push_back(0); // y-coord
@@ -49,11 +48,11 @@ void Cylinder::DrawCylinder()
 	// create the cylinder
 	for (float z = 0; z < length; z += dz) {
 		for (float theta = 0; theta <= 2 * M_PI + 0.0001; theta += thetaStep) {
-			this->addVertices(cylVertices, Vector3(radius*cos(theta), z, radius*sin(theta)));
+			this->addVertices(cylVertices, glm::vec3(radius*cos(theta), z, radius*sin(theta)));
 			uv_coord.push_back(z / length); // x-coord
 			uv_coord.push_back(theta / ((float)2.0*M_PI)); // y-coord
 			
-			this->addVertices(cylVertices, Vector3(radius*cos(theta), z + dz, radius*sin(theta)));
+			this->addVertices(cylVertices, glm::vec3(radius*cos(theta), z + dz, radius*sin(theta)));
 			uv_coord.push_back((z + dz) / length); // x-coord
 			uv_coord.push_back((theta) / ((float)2.0*M_PI)); // y-coord
 
@@ -70,8 +69,8 @@ void Cylinder::DrawCylinder()
 	}
 	// close the opening at end
 	for (float theta = 0; theta <= 2 * M_PI + 0.0001; theta += thetaStep) {
-		this->addVertices(cylVertices, Vector3(radius*cos(theta), length, radius*sin(theta)));
-		this->addVertices(cylVertices, Vector3(0, length, 0));
+		this->addVertices(cylVertices, glm::vec3(radius*cos(theta), length, radius*sin(theta)));
+		this->addVertices(cylVertices, glm::vec3(0, length, 0));
 		uv_coord.push_back(0); // y-coord
 		uv_coord.push_back(0); // x-coord
 		uv_coord.push_back(0); // y-coord
@@ -107,14 +106,13 @@ void Cylinder::setInitialTexture(){
 	}
 }
 
-Cylinder::Cylinder(Vector3 pos, GLfloat r, GLfloat size, Vector3 angle, GLint res) {
+Cylinder::Cylinder(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLint res) {
 	origin = pos;
 	radius = r;
 	length = size;
-	dir = angle;
+	this->setDir(angle);
 	slices = res;
-	std::cout << "cylinder " << origin << dir << std::endl;
-
+	
 	this->shaderOrigin = glGetUniformLocation(Cylinder::m_cProg->getPrgID(), "origin");
 	this->shaderVertex = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "in_Position");
 	this->shaderVertexUV = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "vertTexCoord");

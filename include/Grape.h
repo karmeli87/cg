@@ -7,7 +7,6 @@
 #endif
 #include <GL/gl.h>
 
-#include "Matrices.h"
 #include "ShaderProgram.h"
 #include "GameObject.h"
 
@@ -15,18 +14,18 @@ class Grape: public GameObject{
 	
 public:
 	Grape(){}
-	Grape(Vector3 radiusVector);
-	Grape(Vector3 pos,Vector3 dir, Vector3 radiusVector);
+	Grape(glm::vec3 radiusVector);
+	Grape(glm::vec3 pos,glm::vec3 dir, glm::vec3 radiusVector);
 	~Grape(){}
 	static void setShader(ShaderProgram &prog){m_cProg = &prog;}
 	static void setInitialTexture();
 	virtual void render();
-	virtual void move(Vector3 new_pos);
+	virtual void move(glm::vec3 new_pos);
 protected:
 	virtual void setMaterial();
 
 private:
-	Vector3 rVector;
+	glm::vec3 rVector;
 	void DrawEllipsoid();
 	static ShaderProgram *m_cProg;
 };
