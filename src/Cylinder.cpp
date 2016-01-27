@@ -2,13 +2,16 @@
 #include <iostream>
 #include <math.h>
 #include "Cylinder.h"
+#include "TextureLoader.h"
 
-unsigned int textureHeight1 = 512;
-unsigned int textureWidht1 = 512;
-const char *texturePath1 = "./textures/stemTexture4.png"; 
-bool isTextureLoaded1 = false;
+unsigned int textureHeight1 = 256;
+unsigned int textureWidth1 = 128;
+const char *texturePath1 = "./textures/cork.png"; 
+const char *texturePath2 = "./textures/normalMapCork.png";
 GLuint textureId1;
-std::vector<unsigned char> textureData1;
+GLuint textureId2;
+
+std::vector<unsigned char> mapNormals;
 
 ShaderProgram* Cylinder::m_cProg = NULL;
 
@@ -18,7 +21,8 @@ void Cylinder::DrawCylinder()
 	std::vector<unsigned int> indices;
 	std::vector<float> cylVertices;
 	std::vector<float> normals;
-
+	unsigned char* normalMap = mapNormals.data();
+//	normalMap[3 * textureHeight1]
 	float thetaStep = ((float)2.0*M_PI) / slices;
 	float dz = ((float)(length)) / slices;
 
@@ -51,16 +55,31 @@ void Cylinder::DrawCylinder()
 	for (float z = 0; z < length; z += dz) {
 		for (float theta = 0; theta <= 2 * M_PI + 0.0001; theta += thetaStep) {
 			this->addVertices(cylVertices, glm::vec3(radius*cos(theta), z, radius*sin(theta)));
-			this->addVertices(normals, glm::vec3(radius*cos(theta), 0, radius*sin(theta)));
+			//this->addVertices(normals, glm::vec3(radius*cos(theta), 0, radius*sin(theta)));
 
-			uv_coord.push_back(z / length); // x-coord
-			uv_coord.push_back(theta / ((float)2.0*M_PI)); // y-coord
-			
+			float uvx = z / length;
+			float uvy = theta / ((float)2.0*M_PI);
+
+			uv_coord.push_back(uvx*2); // x-coord
+			uv_coord.push_back(uvy); // y-coord
+
+			unsigned int normalIndex = 4 * (unsigned int)(uvy*textureWidth1 + uvx*textureHeight1*textureWidth1);
+			glm::vec3 norm = glm::vec3(normalMap[normalIndex] * cos(theta), normalMap[normalIndex + 1], normalMap[normalIndex + 2] * sin(theta));
+			this->addVertices(normals, 2.0f*glm::normalize(norm)-1.0f);
+			//std::cout << glm::to_string(glm::normalize(norm)) << std::endl;
+			//std::cout << glm::to_string(glm::normalize(glm::vec3(radius*cos(theta), 0, radius*sin(theta)))) << std::endl;
+
 			this->addVertices(cylVertices, glm::vec3(radius*cos(theta), z + dz, radius*sin(theta)));
-			this->addVertices(normals, glm::vec3(radius*cos(theta), 0, radius*sin(theta)));
+			//this->addVertices(normals, glm::vec3(radius*cos(theta), 0, radius*sin(theta)));
 
-			uv_coord.push_back((z + dz) / length); // x-coord
-			uv_coord.push_back((theta) / ((float)2.0*M_PI)); // y-coord
+			uvx = (z + dz) / length;
+			
+			uv_coord.push_back(uvx*2); // x-coord
+			uv_coord.push_back(uvy); // y-coord
+
+			normalIndex = 4 * (unsigned int)(uvy*textureWidth1 + uvx*textureHeight1*textureWidth1);
+			norm = glm::vec3(normalMap[normalIndex] * cos(theta), normalMap[normalIndex + 1], normalMap[normalIndex + 2] * sin(theta));
+			this->addVertices(normals, 2.0f*glm::normalize(norm)-1.0f);
 
 			i = i + 2;
 			indices.push_back(i);
@@ -97,22 +116,12 @@ void Cylinder::DrawCylinder()
 	this->bindVertices(cylVertices);
 	this->bindIndices(indices);
 	this->bindUV(uv_coord);
-	bindNormals(normals);
+	this->bindNormals(normals);
 }
 
 void Cylinder::setInitialTexture(){
-	if (!isTextureLoaded1){
-		loadPNG(texturePath1, textureData1, textureWidht1, textureHeight1);
-		glGenTextures(1, &textureId1);
-		glBindTexture(GL_TEXTURE_2D, textureId1);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureHeight1, textureWidht1, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData1.data());
-		textureData1.clear();
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		isTextureLoaded1 = true;
-	}
+	TextureLoadr::load(textureId1, texturePath1, textureHeight1, textureWidth1);
+	mapNormals = TextureLoadr::getData(texturePath2, textureHeight1, textureWidth1);
 }
 
 Cylinder::Cylinder(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLint res) {

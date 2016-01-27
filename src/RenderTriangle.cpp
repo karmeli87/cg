@@ -17,6 +17,7 @@ const GLchar* fragShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/fra
 Light* mainLight;
 Stem1* mainStem;
 //Grape* myGrape;
+Cylinder *myCylinder;
 
 // constructor
 RenderTriangle::RenderTriangle()
@@ -111,6 +112,7 @@ RenderTriangle::initGL()
   // enable anti-aliasing
   glEnable( GL_MULTISAMPLE_ARB );
  // myGrape = new Grape(glm::vec3(0, 0, 0), glm::vec3(45, 45, 45), glm::vec3(1, 1, 2));
+  myCylinder = new Cylinder(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 20);
   mainLight = new Light(glm::vec3(0, 10, -10));
   mainStem = new Stem1(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 20);
   
@@ -175,9 +177,12 @@ void
 RenderTriangle::moveObject2D(unsigned int index, int x, int y){
 	//grapeArr[index - 1]->move(glm::vec3(-(float)(x) / (2*m_iWidth)*m_fTransZ,(float)(y) / (2*m_iHeight)*m_fTransZ, 0));
 }
+
 void
 RenderTriangle::render()
 {
+	
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
@@ -188,7 +193,8 @@ RenderTriangle::render()
 	glClear(GL_DEPTH_BUFFER_BIT);
 	//ConfigureShaderAndMatrices();
 	mainStem->render();
-
+	//myCylinder->render();
+	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	// 2. then render scene as normal with shadow mapping (using depth map)
 	glViewport(0, 0, m_iWidth, m_iHeight);
@@ -196,5 +202,5 @@ RenderTriangle::render()
 	//ConfigureShaderAndMatrices();
 	glBindTexture(GL_TEXTURE_2D, depthMap);
 	mainStem->render();
-
+	//myCylinder->render();
 }

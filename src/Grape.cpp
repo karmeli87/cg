@@ -1,19 +1,16 @@
-
-#include <iostream>
 #include <math.h>
 #include "Grape.h"
 #include "Common.h"
-
+#include "TextureLoader.h"
 const double Pi = 3.1415926535897;
 unsigned int stacks = 20;
 unsigned int slices = 20;
 unsigned int textureHeight = 512;
-unsigned int textureWidht = 512;
+unsigned int textureWidth = 512;
 const char *texturePath = "./textures/greenSM.png";
-bool isTextureLoaded = false;
+
 GLuint textureId;
 
-std::vector<unsigned char> textureData;
 
 ShaderProgram* Grape::m_cProg = NULL;
 
@@ -78,18 +75,8 @@ void Grape::DrawEllipsoid()
 }
 
 void Grape::setInitialTexture(){
-	if (!isTextureLoaded){
-		loadPNG(texturePath, textureData, textureWidht, textureHeight);
-		glGenTextures(1, &textureId);
-		glBindTexture(GL_TEXTURE_2D, textureId);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureHeight, textureWidht, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData.data());
-		textureData.clear();
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		isTextureLoaded = true;
-	}
+	TextureLoadr::load(textureId, texturePath, textureHeight, textureWidth);
+	printf("loaded with id: %d", textureId);
 }
 
 Grape::Grape(glm::vec3 pos, glm::vec3 dir,glm::vec3 radiusVector){

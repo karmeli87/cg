@@ -13,8 +13,8 @@ Light::Light(glm::vec3 pos)
 
 	glUniform3f(lightPosLoc, point.x, point.y, point.z);
 	glUniform3f(matAmbientLoc, 0.2f, 0.2f, 0.2f);
-	glUniform3f(matDiffuseLoc, 0.5f, 0.5f, 0.5f);
-	glUniform3f(matSpecularLoc, 1.0f, 1.0f, 1.0f);
+	glUniform3f(matDiffuseLoc, 0.7f, 0.7f, 0.7f);
+	glUniform3f(matSpecularLoc, 0.1f, 0.1f, 0.1f);
 }
 
 

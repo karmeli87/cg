@@ -17,6 +17,6 @@ void main()
   mat4 move = mat4(1.0f);
   move[3].xyz=origin;
   gl_Position = cProjectionMatrix*cModelviewMatrix  * move  *in_Position;
-  FragPos = in_Position.xyz;
+  FragPos = ( move  *in_Position).xyz;
   Normal = vertexNormal;
 }

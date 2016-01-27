@@ -178,6 +178,7 @@
     <ClInclude Include="include\Stem1.h" />
     <ClInclude Include="include\Stem2.h" />
     <ClInclude Include="include\Stem3.h" />
+    <ClInclude Include="include\TextureLoader.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
