@@ -10,11 +10,22 @@
 Stem2::Stem2(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLint res) :Cylinder(pos, r, size, angle, res){
 
 	for (int i = 0; i < stem3num; i++){
+		float randFl = static_cast <float> (rand()) / static_cast <float> (RAND_MAX); // random between 0 and 1
+		float randFl1 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX); // random between 0 and 1
+		float randFl2 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX); // random between 0 and 1
+
+		float high = size / 3 * 2;
+		float low = size / 3 * 1;
+		float randLength = ((low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)))));
+		high = r / 3 * 2;
+		low = r / 3 * 1;
+		float randRadius = ((low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)))));
+
 		stem3Array[i] = new Stem3(
-			origin + (i + 1)*size / stem3num*glm::normalize(axis),
-			r / 2,	// half the radius of stem1
-			size / 3 * 2,	// two thirds the length of stem1
-			glm::vec3(45 * i, 90, 45),// angle
+			origin + (i + 1)*size / (stem3num +1 )*glm::normalize(axis),
+			randRadius,	// tow thirds the radius of stem2
+			randLength,	// one thirds the length of stem2
+			glm::vec3(45 * randFl, 90 * randFl1, 45 * randFl2),// angle
 			res
 			);
 

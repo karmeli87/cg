@@ -20,7 +20,7 @@ public:
 	virtual void render();
 
 protected:
-	static const int stem3num = 3;
+	static const int stem3num = 6;
 	Stem3* stem3Array[stem3num];
 };
 

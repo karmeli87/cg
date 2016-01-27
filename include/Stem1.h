@@ -17,7 +17,7 @@ public:
 	virtual void render();
 
 protected:
-	static const int stem2num = 3;
+	static const int stem2num = 10;
 	Stem2* stem2Array[stem2num];
 
 };

@@ -18,7 +18,6 @@ public:
 	virtual void render();
 
 protected:
-	//Grape* fruitEdgeArray[1];
 	Grape* fruitEdge;
 };
 

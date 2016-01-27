@@ -159,6 +159,7 @@ RenderTriangle::render()
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	//myGrape->render();
+	//(new Grape(glm::vec3(0, 0, 0), glm::vec3(45, 45, 45), glm::vec3(1, 1, 2)))->render();
 	mainStem->render();
 
 }
