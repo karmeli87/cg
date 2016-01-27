@@ -14,7 +14,7 @@ Stem1::Stem1(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLint res)
 			origin + (i + 1)*size / stem2num*glm::normalize(axis),
 			r / 2,	// half the radius of stem1
 			size / 3 * 2,	// two thirds the length of stem1
-			glm::vec3(45*i,90,45),// angle
+			glm::vec3(i+1, std::cosf(30 * i), std::sinf(30 * i)),// angle
 			res
 		);
 

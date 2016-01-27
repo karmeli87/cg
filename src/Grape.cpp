@@ -37,13 +37,13 @@ void Grape::DrawEllipsoid()
 			addVertices(vertices,coord*rVector);
 			uv_coord.push_back((2 * t + Pi) / (2 * Pi)); // x-coord
 			uv_coord.push_back((s + Pi) / (2 * Pi)); // y-coord
-			Grape::pushVector<float>(normals, 2.0f*coord*inv_rVector*inv_rVector);
+			addVertices(normals, 2.0f*coord*inv_rVector*inv_rVector);
 
 			coord = glm::vec3(cos(t + tStep) * cos(s), cos(t + tStep) * sin(s), sin(t + tStep));
 			addVertices(vertices,coord*rVector);
 			uv_coord.push_back((2 * t + 2 *tStep + Pi) / (2 * Pi)); // x-coord
 			uv_coord.push_back((s + Pi) / (2 * Pi)); // y-coord
-			Grape::pushVector<float>(normals, 2.0f*coord*inv_rVector*inv_rVector);
+			addVertices(normals, 2.0f*coord*inv_rVector*inv_rVector);
 
 			i = i + 2;
 
@@ -96,6 +96,7 @@ Grape::Grape(glm::vec3 pos, glm::vec3 dir,glm::vec3 radiusVector){
 	
 	origin = pos;
 	rVector = radiusVector;
+	axis = glm::vec3(0, 0, 1);
 	setDir(dir);
 
 	shaderOrigin = glGetUniformLocation(Grape::m_cProg->getPrgID(), "origin");

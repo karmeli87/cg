@@ -13,7 +13,7 @@ Stem2::Stem2(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLint res)
 		stem3Array[i] = new Stem3(
 			origin + (i + 1)*size / stem3num*glm::normalize(axis),
 			r / 2,	// half the radius of stem1
-			size / 3 * 2,	// two thirds the length of stem1
+			size / 4,	// two thirds the length of stem1
 			glm::vec3(45 * i, 90, 45),// angle
 			res
 			);

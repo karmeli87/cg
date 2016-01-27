@@ -38,8 +38,9 @@ RenderTriangle::setWindowSize( int iWidth, int iHeight )
   m_iHeight = iHeight;
   glViewport( 0, 0, m_iWidth, m_iHeight );      // tells OpenGL the new size of the render area
 }
-
-
+const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+GLuint depthMapFBO;
+GLuint depthMap;
 void
 RenderTriangle::initGL()
 {
@@ -68,6 +69,28 @@ RenderTriangle::initGL()
   Grape::setShader(m_cProg);
   Cylinder::setShader(m_cProg);
   Light::setShader(m_cProg);
+
+  // init shadows
+
+  // init shadows
+  glGenFramebuffers(1, &depthMapFBO);
+
+  glGenTextures(1, &depthMap);
+  glBindTexture(GL_TEXTURE_2D, depthMap);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+	  SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+  glDrawBuffer(GL_NONE);
+  glReadBuffer(GL_NONE);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
   //-----------------------------------------------------------------
   // init GL
   //-----------------------------------------------------------------
@@ -88,7 +111,7 @@ RenderTriangle::initGL()
   // enable anti-aliasing
   glEnable( GL_MULTISAMPLE_ARB );
  // myGrape = new Grape(glm::vec3(0, 0, 0), glm::vec3(45, 45, 45), glm::vec3(1, 1, 2));
-  mainLight = new Light(glm::vec3(0, 0, -10));
+  mainLight = new Light(glm::vec3(0, 10, -10));
   mainStem = new Stem1(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 20);
   
 }
@@ -159,6 +182,19 @@ RenderTriangle::render()
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	//myGrape->render();
+
+	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	//ConfigureShaderAndMatrices();
+	mainStem->render();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// 2. then render scene as normal with shadow mapping (using depth map)
+	glViewport(0, 0, m_iWidth, m_iHeight);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//ConfigureShaderAndMatrices();
+	glBindTexture(GL_TEXTURE_2D, depthMap);
 	mainStem->render();
 
 }
