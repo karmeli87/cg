@@ -104,5 +104,11 @@
       <Filter>Shader Fles</Filter>
     </None>
     <None Include="packages.config" />
+    <None Include="shaders\shadowFragment.fs">
+      <Filter>Shader Fles</Filter>
+    </None>
+    <None Include="shaders\shadowVertex.fs">
+      <Filter>Shader Fles</Filter>
+    </None>
   </ItemGroup>
 </Project>

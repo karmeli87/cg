@@ -17,7 +17,6 @@ public:
 	Grape(glm::vec3 radiusVector);
 	Grape(glm::vec3 pos,glm::vec3 dir, glm::vec3 radiusVector);
 	~Grape(){}
-	static void setShader(ShaderProgram &prog){m_cProg = &prog;}
 	static void setInitialTexture();
 	virtual void render();
 	virtual void move(glm::vec3 new_pos);
@@ -26,8 +25,8 @@ protected:
 
 private:
 	glm::vec3 rVector;
+	virtual void bindShaderAttrs();
 	void DrawEllipsoid();
-	static ShaderProgram *m_cProg;
 };
 
 #endif

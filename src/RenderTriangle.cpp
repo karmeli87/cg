@@ -10,9 +10,15 @@
 
 // vertex shader program
 const GLchar* vertexShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/vertex.fs");
-
 // fragment shader program
 const GLchar* fragShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/fragment.fs");
+
+const GLchar* vertexShadowShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/shadowVertex.fs");
+// fragment shader program
+const GLchar* fragShadowShaderRTSrc = ShaderProgram::LoadShaderFromFile("./shaders/shadowFragment.fs");
+
+
+ShaderProgram * GameObject::m_cProg = NULL;
 
 Light* mainLight;
 Stem1* mainStem;
@@ -42,9 +48,44 @@ RenderTriangle::setWindowSize( int iWidth, int iHeight )
 const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 GLuint depthMapFBO;
 GLuint depthMap;
+
+void initShadowParams(){
+
+	// init shadows
+	glGenFramebuffers(1, &depthMapFBO);
+
+	glGenTextures(1, &depthMap);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+}
+
+void setShadowParams(){
+
+}
+
+void initScene(){
+}
+
+GLuint m_iLightSpaceMatrix;
+
 void
 RenderTriangle::initGL()
 {
+	initShadowParams();
+
   //----------------------------------------------------------------------
   // create program and link
   //----------------------------------------------------------------------
@@ -55,10 +96,11 @@ RenderTriangle::initGL()
   // determine bindings with shader
   m_iProjectionMatrixID = glGetUniformLocation(m_cProg.getPrgID(), "cProjectionMatrix");
   m_iModelviewMatrixID = glGetUniformLocation(m_cProg.getPrgID(), "cModelviewMatrix");
+  m_iLightSpaceMatrix = glGetUniformLocation(m_cProg.getPrgID(), "lightSpaceMatrix");
 
   glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.diffuse"), 0);
   glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.specular"), 1);
- 
+
   GLint viewPosLoc = glGetUniformLocation(m_cProg.getPrgID(), "viewPos");
   glUniform3f(viewPosLoc, 0, 0, -10);
   //----------------------------------------------------------------------
@@ -67,29 +109,26 @@ RenderTriangle::initGL()
   Grape::setInitialTexture();
   Cylinder::setInitialTexture();
   
-  Grape::setShader(m_cProg);
-  Cylinder::setShader(m_cProg);
-  Light::setShader(m_cProg);
+  GameObject::m_cProg = &m_cProg;
 
-  // init shadows
+  glm::vec3 lightPos = glm::vec3(10, 10, 20);
 
-  // init shadows
-  glGenFramebuffers(1, &depthMapFBO);
+  float fLeft, fRight, fBottom, fTop;
+  fTop = m_fNearDistance * tanf(m_fHeightAngle / 2.0f);
+  fRight = fTop * (float)m_iWidth / (float)m_iHeight;
+  fBottom = -fTop;
+  fLeft = -fRight;
 
-  glGenTextures(1, &depthMap);
-  glBindTexture(GL_TEXTURE_2D, depthMap);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-	  SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glm::mat4 lightProjection = glm::ortho(-fRight, fRight, -fTop, fTop, m_fNearDistance, m_fFarDistance);
+  glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(1.0));
+  glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+  glUniformMatrix4fv(m_iLightSpaceMatrix, 1, false, glm::value_ptr(lightSpaceMatrix));
 
-  glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-  glDrawBuffer(GL_NONE);
-  glReadBuffer(GL_NONE);
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  //myCylinder = new Cylinder(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 20);
+  mainLight = new Light(lightPos);
+  mainStem = new Stem1(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 40);
+
+
 
 
   //-----------------------------------------------------------------
@@ -112,10 +151,7 @@ RenderTriangle::initGL()
   // enable anti-aliasing
   glEnable( GL_MULTISAMPLE_ARB );
  // myGrape = new Grape(glm::vec3(0, 0, 0), glm::vec3(45, 45, 45), glm::vec3(1, 1, 2));
-  myCylinder = new Cylinder(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 20);
-  mainLight = new Light(glm::vec3(15, 15, -10));
-  mainStem = new Stem1(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 40);
-  
+ 
 }
 
 
@@ -175,7 +211,20 @@ void RenderTriangle::selectObject(unsigned int index){
 }
 void
 RenderTriangle::moveObject2D(unsigned int index, int x, int y){
-	//grapeArr[index - 1]->move(glm::vec3(-(float)(x) / (2*m_iWidth)*m_fTransZ,(float)(y) / (2*m_iHeight)*m_fTransZ, 0));
+	mainLight->setPos(glm::vec3(-(float)(x) / (2 * m_iWidth)*m_fTransZ, (float)(y) / (2 * m_iHeight)*m_fTransZ, 0));
+
+	float fLeft, fRight, fBottom, fTop;
+	fTop = m_fNearDistance * tanf(m_fHeightAngle / 2.0f);
+	fRight = fTop * (float)m_iWidth / (float)m_iHeight;
+	fBottom = -fTop;
+	fLeft = -fRight;
+
+	glm::mat4 lightProjection = glm::ortho(-fRight, fRight, -fTop, fTop, m_fNearDistance, m_fFarDistance);
+	glm::mat4 lightView = glm::lookAt(mainLight->getPos(), glm::vec3(0.0f), glm::vec3(1.0));
+	glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+	glUniformMatrix4fv(m_iLightSpaceMatrix, 1, false, glm::value_ptr(lightSpaceMatrix));
+
+
 }
 
 void
@@ -188,19 +237,24 @@ RenderTriangle::render()
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	//myGrape->render();
 
-	//glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-	//glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-	//glClear(GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
 	//ConfigureShaderAndMatrices();
+	
+	glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "shadowTest"), 1);
 	mainStem->render();
 	//myCylinder->render();
-	/*
+	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	// 2. then render scene as normal with shadow mapping (using depth map)
 	glViewport(0, 0, m_iWidth, m_iHeight);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//ConfigureShaderAndMatrices();
+	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, depthMap);
-	//mainStem->render();
-	myCylinder->render();*/
+	glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "shadowTest"), 0);
+	mainStem->render();
+	mainLight->render();
+	//myCylinder->render();
 }

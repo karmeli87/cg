@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include "ShaderProgram.h"
 
 class GameObject
 {
@@ -37,6 +38,7 @@ public:
 		this->dir = dir;
 	}
 	virtual ~GameObject(){}
+	static ShaderProgram *m_cProg;
 	virtual void render() = 0;
 	virtual void select(){ 
 		isSelected = true;
@@ -46,9 +48,8 @@ public:
 		isSelected = false; 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
-
 protected:
-
+	
 	glm::mat4 trans;
 	glm::vec3 axis = glm::vec3(0,1,0);
 
@@ -62,6 +63,8 @@ protected:
 		list[3 * index + 1] = vec.y;
 		list[3 * index + 2] = vec.z;
 	}
+	
+
 	virtual void setDir(glm::vec3 newDir){
 		glm::vec3 rotationAxis = glm::cross(axis, newDir);
 		float angle = std::acos(glm::dot(glm::normalize(axis), glm::normalize(newDir)));// *180 / 3.14159265;
@@ -77,6 +80,18 @@ protected:
 		glm::vec3 newVec = glm::vec3(res.x, res.y, res.z);
 		pushVector<float>(vertices, newVec);
 	}
+
+	virtual void bindShaderAttrs(){
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glVertexAttribPointer(shaderVertex, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	
+		glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
+		glVertexAttribPointer(shaderVertexUV, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+		glVertexAttribPointer(shaderVertexNormal, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	};
+
 	virtual void bindVertices(std::vector<float>&vertices){
 		objectsNum = vertices.size();
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);

@@ -15,14 +15,19 @@ struct Light {
 in vec3 FragPos;  
 in vec3 Normal;  
 in vec2 TexCoords;
-  
+in vec4 FragPosLightSpace;
+in vec4 projCoords;
+
 out vec4 color;
-  
+ 
+uniform sampler2D shadowMap;
 uniform vec3 viewPos;
 uniform Material material;
 uniform Light light;
 
-/*
+uniform int shadowTest;
+uniform int renderLight;
+
 float ShadowCalculation(vec4 fragPosLightSpace)
 {
     // perform perspective divide
@@ -34,8 +39,8 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     // Get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // Calculate bias (based on depth map resolution and slope)
-    vec3 normal = normalize(fs_in.Normal);
-    vec3 lightDir = normalize(lightPos - fs_in.FragPos);
+    vec3 normal = normalize(Normal);
+    vec3 lightDir = normalize(light.position - FragPos);
     float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
     // Check whether current frag pos is in shadow
     // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
@@ -58,9 +63,16 @@ float ShadowCalculation(vec4 fragPosLightSpace)
         
     return shadow;
 }
-*/
+
 void main()
 {
+    if(shadowTest == 1 ){
+        return;
+    }
+    if(renderLight == 1){
+        color = vec4(1.0f,1.0f,1.0f,1.0f);
+        return;
+    }
     // Ambient
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
 
@@ -76,7 +88,10 @@ void main()
     vec3 halfwayDir = normalize(lightDir + viewDir); 
     float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec ;
-        
-    color = vec4(ambient + diffuse + specular, 1.0f);
+        float  shadow = 0;
+        if(shadowTest == 0){
+            shadow = ShadowCalculation(FragPosLightSpace);
+        }
+    color = vec4(ambient + (1.0 - shadow)*(diffuse + specular), 1.0f);
     //color  = vec4(0.5f,0.5f,0.5f,1.0f);
 } 

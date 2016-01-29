@@ -1,25 +1,28 @@
 #include <glm/glm.hpp>
 #include "ShaderProgram.h"
+#include "GameObject.h"
 
-class Light
+class Light : public GameObject
 {
 public:
 	Light(glm::vec3 pos);
 	~Light();
-	static void setShader(ShaderProgram &shader){
-		m_cProg = &shader;
-	}
 	void ShowLightSource();
+
+	glm::vec3 getPos(){ return origin; }
+	void setPos(glm::vec3 pos){ 
+		origin += pos; 
+		glUniform3f(lightPosLoc, origin.x, origin.y, origin.z);
+
+	}
+	void virtual render();
+
 private:
-	static ShaderProgram* m_cProg;
-	glm::vec3 point;
+	virtual void setMaterial(){};
 	GLint matAmbientLoc;
 	GLint matDiffuseLoc;
 	GLint matSpecularLoc;
 	GLint lightPosLoc;
 
-	GLuint origin;
-	GLuint vao;
-	GLuint vertexBuffer;
 };
 

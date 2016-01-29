@@ -18,7 +18,6 @@ public:
 	Cylinder(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLint res);
 	~Cylinder() {}
 	static void setInitialTexture();
-	static void setShader(ShaderProgram &prog){ m_cProg = &prog; }
 	virtual void render();
 
 protected:
@@ -27,10 +26,6 @@ protected:
 	GLfloat radius;
 	GLint slices;
 	void DrawCylinder();
-
-private:
-	static ShaderProgram *m_cProg;
-
 };
 
 #endif

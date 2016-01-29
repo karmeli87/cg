@@ -11,9 +11,6 @@ const char *texturePath = "./textures/greenSM.png";
 
 GLuint textureId;
 
-
-ShaderProgram* Grape::m_cProg = NULL;
-
 void Grape::DrawEllipsoid()
 {
 	std::vector<unsigned int> indices;
@@ -79,6 +76,16 @@ void Grape::setInitialTexture(){
 	printf("loaded with id: %d", textureId);
 }
 
+void Grape::bindShaderAttrs(){
+
+	shaderOrigin = glGetUniformLocation(GameObject::m_cProg->getPrgID(), "origin");
+	shaderVertex = glGetAttribLocation(GameObject::m_cProg->getPrgID(), "in_Position");
+	shaderVertexUV = glGetAttribLocation(GameObject::m_cProg->getPrgID(), "vertTexCoord");
+	shaderVertexNormal = glGetAttribLocation(GameObject::m_cProg->getPrgID(), "vertexNormal");
+
+	GameObject::bindShaderAttrs();
+}
+
 Grape::Grape(glm::vec3 pos, glm::vec3 dir,glm::vec3 radiusVector){
 	
 	origin = pos;
@@ -86,11 +93,6 @@ Grape::Grape(glm::vec3 pos, glm::vec3 dir,glm::vec3 radiusVector){
 	axis = glm::vec3(0, 0, 1);
 	setDir(dir);
 
-	shaderOrigin = glGetUniformLocation(Grape::m_cProg->getPrgID(), "origin");
-	shaderVertex = glGetAttribLocation(Grape::m_cProg->getPrgID(), "in_Position");
-	shaderVertexUV = glGetAttribLocation(Grape::m_cProg->getPrgID(), "vertTexCoord");
-	shaderVertexNormal = glGetAttribLocation(Grape::m_cProg->getPrgID(), "vertexNormal");
-	
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glGenBuffers(1, &indexBuffer);
@@ -99,10 +101,11 @@ Grape::Grape(glm::vec3 pos, glm::vec3 dir,glm::vec3 radiusVector){
 	glGenBuffers(1, &normalBuffer);
 	
 	DrawEllipsoid();
+	bindShaderAttrs();
 }
 Grape::Grape(glm::vec3 pos) : Grape(pos, glm::vec3() ,glm::vec3(1.0, 1.0, 1.0)){}
 void Grape::setMaterial(){
-	GLint matShineLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "material.shininess");
+	GLint matShineLoc = glGetUniformLocation(GameObject::m_cProg->getPrgID(), "material.shininess");
 	glUniform1f(matShineLoc, 1.0f);
 }
 void Grape::render(){

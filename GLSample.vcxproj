@@ -197,6 +197,8 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="shaders\fragment.fs" />
+    <None Include="shaders\shadowFragment.fs" />
+    <None Include="shaders\shadowVertex.fs" />
     <None Include="shaders\vertex.fs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

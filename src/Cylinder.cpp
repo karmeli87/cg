@@ -14,8 +14,6 @@ GLuint textureId2;
 
 std::vector<unsigned char> mapNormals;
 
-ShaderProgram* Cylinder::m_cProg = NULL;
-
 void Cylinder::DrawCylinder()
 {
 	std::vector<float> uv_coord;
@@ -69,7 +67,7 @@ void Cylinder::DrawCylinder()
 			unsigned int normalIndex =4*(unsigned int)(uvy*(float)(textureWidth1-1) + uvx*(float)(textureHeight1)*(float)(textureWidth1-1));
 			//std::cout << normalIndex << std::endl;
 			normalIndex = std::min(normalIndex, totalSize);
-			glm::vec3 norm = glm::vec3(normalMap[normalIndex], normalMap[normalIndex + 1], normalMap[normalIndex + 2] );
+			glm::vec3 norm = glm::vec3(normalMap[normalIndex], normalMap[normalIndex + 1],- normalMap[normalIndex + 2] );
 			norm = glm::rotate(norm, theta, rotationAxis);
 			this->addVertices(normals, 2.0f*glm::normalize(norm) - 1.0f);
 			
@@ -89,7 +87,7 @@ void Cylinder::DrawCylinder()
 			}
 			normalIndex = std::min(normalIndex, totalSize);
 			
-			norm = glm::vec3(normalMap[normalIndex], normalMap[normalIndex + 1], normalMap[normalIndex + 2]);
+			norm = glm::vec3(normalMap[normalIndex], normalMap[normalIndex + 1],- normalMap[normalIndex + 2]);
 			norm = glm::rotate(norm, theta, rotationAxis);
 			this->addVertices(normals, 2.0f*glm::normalize(norm) - 1.0f);
 
@@ -143,10 +141,10 @@ Cylinder::Cylinder(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLin
 	this->setDir(angle);
 	slices = res;
 	
-	this->shaderOrigin = glGetUniformLocation(Cylinder::m_cProg->getPrgID(), "origin");
-	this->shaderVertex = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "in_Position");
-	this->shaderVertexUV = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "vertTexCoord");
-	this->shaderVertexNormal = glGetAttribLocation(Cylinder::m_cProg->getPrgID(), "vertexNormal");
+	this->shaderOrigin = glGetUniformLocation(GameObject::m_cProg->getPrgID(), "origin");
+	this->shaderVertex = glGetAttribLocation(GameObject::m_cProg->getPrgID(), "in_Position");
+	this->shaderVertexUV = glGetAttribLocation(GameObject::m_cProg->getPrgID(), "vertTexCoord");
+	this->shaderVertexNormal = glGetAttribLocation(GameObject::m_cProg->getPrgID(), "vertexNormal");
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -160,7 +158,7 @@ Cylinder::Cylinder(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLin
 }
 
 void Cylinder::setMaterial(){
-	GLint matShineLoc = glGetUniformLocation(Cylinder::m_cProg->getPrgID(), "material.shininess");
+	GLint matShineLoc = glGetUniformLocation(GameObject::m_cProg->getPrgID(), "material.shininess");
 	glUniform1f(matShineLoc, 1.0f);
 }
 

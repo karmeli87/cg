@@ -87,7 +87,7 @@ GLuint xStart;
 GLuint yStart;
 void onMouseDrag(int x, int y){
 	if (index == 0){
-		return;
+	//	return;
 	}
 	g_pcRenderer->moveObject2D(index, x-xStart, y-yStart);
 	xStart = x;
