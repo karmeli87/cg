@@ -65,7 +65,7 @@ void main()
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
 
     // Diffuse 
-    vec3 norm = normalize(2*Normal-1);
+    vec3 norm = Normal;
     vec3 lightDir = normalize(light.position - FragPos);
     float diff = max(dot(lightDir,norm), 0.0);
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));  
@@ -75,7 +75,7 @@ void main()
     vec3 reflectDir = reflect(-lightDir, norm);  
     vec3 halfwayDir = normalize(lightDir + viewDir); 
     float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
-    vec3 specular = light.specular * spec;
+    vec3 specular = light.specular * spec ;
         
     color = vec4(ambient + diffuse + specular, 1.0f);
     //color  = vec4(0.5f,0.5f,0.5f,1.0f);

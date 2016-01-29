@@ -1,13 +1,14 @@
 #define _USE_MATH_DEFINES
 #include <iostream>
+#include <algorithm>
 #include <math.h>
 #include "Cylinder.h"
 #include "TextureLoader.h"
 
-unsigned int textureHeight1 = 256;
-unsigned int textureWidth1 = 128;
-const char *texturePath1 = "./textures/cork.png"; 
-const char *texturePath2 = "./textures/normalMapCork.png";
+unsigned int textureHeight1 = 512;
+unsigned int textureWidth1 = 512;
+const char *texturePath1 = "./textures/tree.png"; 
+const char *texturePath2 = "./textures/treeNormal.png";
 GLuint textureId1;
 GLuint textureId2;
 
@@ -21,11 +22,13 @@ void Cylinder::DrawCylinder()
 	std::vector<unsigned int> indices;
 	std::vector<float> cylVertices;
 	std::vector<float> normals;
+
 	unsigned char* normalMap = mapNormals.data();
-//	normalMap[3 * textureHeight1]
+	unsigned int totalSize = mapNormals.size();
+	//std::cout << mapNormals.size() << std::endl;
 	float thetaStep = ((float)2.0*M_PI) / slices;
 	float dz = ((float)(length)) / slices;
-
+	glm::vec3 rotationAxis = glm::vec3(0, -1, 0);
 	unsigned int i = -1;
 	// close the opening at begin
 	for (float theta = 0; theta <= 2 * M_PI + 0.0001; theta += thetaStep) {
@@ -52,7 +55,7 @@ void Cylinder::DrawCylinder()
 
 
 	// create the cylinder
-	for (float z = 0; z < length; z += dz) {
+	for (float z = 0; z < length-dz + 0.001; z += dz) {
 		for (float theta = 0; theta <= 2 * M_PI + 0.0001; theta += thetaStep) {
 			this->addVertices(cylVertices, glm::vec3(radius*cos(theta), z, radius*sin(theta)));
 			//this->addVertices(normals, glm::vec3(radius*cos(theta), 0, radius*sin(theta)));
@@ -60,26 +63,35 @@ void Cylinder::DrawCylinder()
 			float uvx = z / length;
 			float uvy = theta / ((float)2.0*M_PI);
 
-			uv_coord.push_back(uvx*2); // x-coord
+			uv_coord.push_back(3*uvx); // x-coord
 			uv_coord.push_back(uvy); // y-coord
 
-			unsigned int normalIndex = 4 * (unsigned int)(uvy*textureWidth1 + uvx*textureHeight1*textureWidth1);
-			glm::vec3 norm = glm::vec3(normalMap[normalIndex] * cos(theta), normalMap[normalIndex + 1], normalMap[normalIndex + 2] * sin(theta));
-			this->addVertices(normals, 2.0f*glm::normalize(norm)-1.0f);
-			//std::cout << glm::to_string(glm::normalize(norm)) << std::endl;
-			//std::cout << glm::to_string(glm::normalize(glm::vec3(radius*cos(theta), 0, radius*sin(theta)))) << std::endl;
-
+			unsigned int normalIndex =4*(unsigned int)(uvy*(float)(textureWidth1-1) + uvx*(float)(textureHeight1)*(float)(textureWidth1-1));
+			//std::cout << normalIndex << std::endl;
+			normalIndex = std::min(normalIndex, totalSize);
+			glm::vec3 norm = glm::vec3(normalMap[normalIndex], normalMap[normalIndex + 1], normalMap[normalIndex + 2] );
+			norm = glm::rotate(norm, theta, rotationAxis);
+			this->addVertices(normals, 2.0f*glm::normalize(norm) - 1.0f);
+			
 			this->addVertices(cylVertices, glm::vec3(radius*cos(theta), z + dz, radius*sin(theta)));
 			//this->addVertices(normals, glm::vec3(radius*cos(theta), 0, radius*sin(theta)));
 
 			uvx = (z + dz) / length;
 			
-			uv_coord.push_back(uvx*2); // x-coord
+			uv_coord.push_back(3*uvx); // x-coord
 			uv_coord.push_back(uvy); // y-coord
 
-			normalIndex = 4 * (unsigned int)(uvy*textureWidth1 + uvx*textureHeight1*textureWidth1);
-			norm = glm::vec3(normalMap[normalIndex] * cos(theta), normalMap[normalIndex + 1], normalMap[normalIndex + 2] * sin(theta));
-			this->addVertices(normals, 2.0f*glm::normalize(norm)-1.0f);
+			normalIndex = 4*(unsigned int)(uvy*(float)(textureWidth1-1) + uvx*(float)(textureHeight1)*(float)(textureWidth1-1));
+			//std::cout << normalIndex << std::endl;
+			if (normalIndex > totalSize){
+				std::cout << normalIndex << std::endl;
+				std::cout << uvx <<":" << uvy<< std::endl;
+			}
+			normalIndex = std::min(normalIndex, totalSize);
+			
+			norm = glm::vec3(normalMap[normalIndex], normalMap[normalIndex + 1], normalMap[normalIndex + 2]);
+			norm = glm::rotate(norm, theta, rotationAxis);
+			this->addVertices(normals, 2.0f*glm::normalize(norm) - 1.0f);
 
 			i = i + 2;
 			indices.push_back(i);
@@ -149,7 +161,7 @@ Cylinder::Cylinder(glm::vec3 pos, GLfloat r, GLfloat size, glm::vec3 angle, GLin
 
 void Cylinder::setMaterial(){
 	GLint matShineLoc = glGetUniformLocation(Cylinder::m_cProg->getPrgID(), "material.shininess");
-	glUniform1f(matShineLoc, 12.0f);
+	glUniform1f(matShineLoc, 1.0f);
 }
 
 void Cylinder::render() {

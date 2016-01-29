@@ -60,7 +60,7 @@ RenderTriangle::initGL()
   glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.specular"), 1);
  
   GLint viewPosLoc = glGetUniformLocation(m_cProg.getPrgID(), "viewPos");
-  glUniform3f(viewPosLoc, 0, 0, -20);
+  glUniform3f(viewPosLoc, 0, 0, -10);
   //----------------------------------------------------------------------
   // create object
   //----------------------------------------------------------------------
@@ -113,8 +113,8 @@ RenderTriangle::initGL()
   glEnable( GL_MULTISAMPLE_ARB );
  // myGrape = new Grape(glm::vec3(0, 0, 0), glm::vec3(45, 45, 45), glm::vec3(1, 1, 2));
   myCylinder = new Cylinder(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 20);
-  mainLight = new Light(glm::vec3(0, 10, -10));
-  mainStem = new Stem1(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 20);
+  mainLight = new Light(glm::vec3(15, 15, -10));
+  mainStem = new Stem1(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 40);
   
 }
 
@@ -188,19 +188,19 @@ RenderTriangle::render()
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	//myGrape->render();
 
-	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-	glClear(GL_DEPTH_BUFFER_BIT);
+	//glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+	//glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	//glClear(GL_DEPTH_BUFFER_BIT);
 	//ConfigureShaderAndMatrices();
 	mainStem->render();
 	//myCylinder->render();
-	
+	/*
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	// 2. then render scene as normal with shadow mapping (using depth map)
 	glViewport(0, 0, m_iWidth, m_iHeight);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//ConfigureShaderAndMatrices();
 	glBindTexture(GL_TEXTURE_2D, depthMap);
-	mainStem->render();
-	//myCylinder->render();
+	//mainStem->render();
+	myCylinder->render();*/
 }

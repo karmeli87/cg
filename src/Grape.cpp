@@ -34,13 +34,13 @@ void Grape::DrawEllipsoid()
 			addVertices(vertices,coord*rVector);
 			uv_coord.push_back((2 * t + Pi) / (2 * Pi)); // x-coord
 			uv_coord.push_back((s + Pi) / (2 * Pi)); // y-coord
-			addVertices(normals, 2.0f*coord*inv_rVector*inv_rVector);
+			addVertices(normals, glm::normalize(2.0f*coord*inv_rVector*inv_rVector));
 
 			coord = glm::vec3(cos(t + tStep) * cos(s), cos(t + tStep) * sin(s), sin(t + tStep));
 			addVertices(vertices,coord*rVector);
 			uv_coord.push_back((2 * t + 2 *tStep + Pi) / (2 * Pi)); // x-coord
 			uv_coord.push_back((s + Pi) / (2 * Pi)); // y-coord
-			addVertices(normals, 2.0f*coord*inv_rVector*inv_rVector);
+			addVertices(normals, glm::normalize(2.0f*coord*inv_rVector*inv_rVector));
 
 			i = i + 2;
 
@@ -103,7 +103,7 @@ Grape::Grape(glm::vec3 pos, glm::vec3 dir,glm::vec3 radiusVector){
 Grape::Grape(glm::vec3 pos) : Grape(pos, glm::vec3() ,glm::vec3(1.0, 1.0, 1.0)){}
 void Grape::setMaterial(){
 	GLint matShineLoc = glGetUniformLocation(Grape::m_cProg->getPrgID(), "material.shininess");
-	glUniform1f(matShineLoc, 32.0f);
+	glUniform1f(matShineLoc, 1.0f);
 }
 void Grape::render(){
 	// bind texture
