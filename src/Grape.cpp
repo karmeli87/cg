@@ -128,7 +128,7 @@ void Grape::render(){
 	glDisableVertexAttribArray(shaderVertex);
 	
 	glBindVertexArray(0);
-	glActiveTexture(GL_TEXTURE_2D);
+	//glActiveTexture(GL_TEXTURE_2D);
 }
 void Grape::move(glm::vec3 new_pos){
 	origin += new_pos;

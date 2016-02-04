@@ -68,15 +68,6 @@ void initShadowParams(){
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-}
-
-void setShadowParams(){
-
-}
-
-void initScene(){
 }
 
 GLuint m_iLightSpaceMatrix;
@@ -100,6 +91,7 @@ RenderTriangle::initGL()
 
   glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.diffuse"), 0);
   glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "material.specular"), 1);
+  glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "shadowMap"), 2);
 
   GLint viewPosLoc = glGetUniformLocation(m_cProg.getPrgID(), "viewPos");
   glUniform3f(viewPosLoc, 0, 0, -10);
@@ -111,7 +103,7 @@ RenderTriangle::initGL()
   
   GameObject::m_cProg = &m_cProg;
 
-  glm::vec3 lightPos = glm::vec3(10, 10, 20);
+  glm::vec3 lightPos = glm::vec3(10, 10, 10);
 
   float fLeft, fRight, fBottom, fTop;
   fTop = m_fNearDistance * tanf(m_fHeightAngle / 2.0f);
@@ -126,7 +118,7 @@ RenderTriangle::initGL()
 
   //myCylinder = new Cylinder(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 20);
   mainLight = new Light(lightPos);
-  mainStem = new Stem1(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 45, 45), 40);
+  mainStem = new Stem1(glm::vec3(0, 0, 0), 0.5f, 20, glm::vec3(45, 0, 0), 50);
 
 
 
@@ -227,24 +219,28 @@ RenderTriangle::moveObject2D(unsigned int index, int x, int y){
 
 }
 
-void
-RenderTriangle::render()
+
+void bindShadowMap(){
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+}
+
+
+void RenderTriangle::render()
 {
 	
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	//myGrape->render();
-
+	
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-	glClear(GL_DEPTH_BUFFER_BIT);
-	//ConfigureShaderAndMatrices();
 	
 	glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "shadowTest"), 1);
 	mainStem->render();
-	//myCylinder->render();
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	// 2. then render scene as normal with shadow mapping (using depth map)
@@ -253,6 +249,7 @@ RenderTriangle::render()
 	//ConfigureShaderAndMatrices();
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, depthMap);
+
 	glUniform1i(glGetUniformLocation(m_cProg.getPrgID(), "shadowTest"), 0);
 	mainStem->render();
 	mainLight->render();

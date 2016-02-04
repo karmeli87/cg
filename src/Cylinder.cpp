@@ -181,7 +181,7 @@ void Cylinder::render() {
 	glDisableVertexAttribArray(shaderVertex);
 	glDisableVertexAttribArray(shaderVertexUV);
 	glBindVertexArray(0);
-	glActiveTexture(GL_TEXTURE_2D);
+	//glActiveTexture(GL_TEXTURE_2D);
 
 
 }
